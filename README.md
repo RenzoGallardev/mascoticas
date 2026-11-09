@@ -9,11 +9,6 @@ Sistema interno para un consultorio veterinario. Primer Sprint.
 Está publicado en Vercel y conectado a GitHub: cada vez que se sube algo a GitHub, Vercel se actualiza solo.
 Los datos se guardan en una base de datos en línea (Upstash Redis, conectada desde la pestaña Storage de Vercel).
 
-### Usuarios de prueba (están en `back/datos/empleados.json`)
-| Usuario | Clave | Rol |
-|---|---|---|
-| secretaria | secretaria123 | secretaria (hace todo) |
-| veterinario | veterinario123 | veterinario (solo consulta) |
 
 ## Carpetas
 
