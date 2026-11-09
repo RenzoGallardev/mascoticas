@@ -9,7 +9,7 @@
  *   3. Front → back ........ conexion.enviar('POST', '/empleados')
  *   4. Recibe en el back ... app.post('/api/empleados')     (server.js)    
  *   5. Lógica .............. ControlEmpleados.crear()       (revisa que no esté registrado)
- *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/empleados.json
+ *   6. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "empleados"
  */
 
 class ValidadorEmpleado {

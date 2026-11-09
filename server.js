@@ -105,7 +105,7 @@ app.get('/api/notificaciones', async function (req, res) {
   res.json(respuesta);
 });
 
-// ---------- Si algo falla al leer o escribir los archivos .json ----------
+// ---------- Si algo falla al leer o escribir en la base de datos (Redis) ----------
 app.use(function (error, req, res, next) {
   console.log(error);
   res.json({ ok: false, mensaje: 'Fallo en la conexión con la base de datos' });

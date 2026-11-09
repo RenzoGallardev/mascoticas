@@ -10,7 +10,7 @@
  *   4. Recibe en el back ... app.post('/api/clientes')              (server.js)    
  *   5. Lógica .............. ControlClientes.crear()                (back/control)
  *   6. Guarda .............. ArchivoJson.agregar()                  (back/persistencia)
- *   7. "Base de datos" ..... back/datos/clientes.json
+ *   7. Base de datos ....... Upstash Redis, lista "clientes"
  */
 
 // Clase que valida los campos ANTES de enviarlos al back

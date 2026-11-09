@@ -9,7 +9,7 @@
  *   3. Front → back ........ conexion.enviar('POST', '/citas')
  *   4. Recibe en el back ... app.post('/api/citas')     (server.js)    
  *   5. Lógica .............. ControlCitas.crear()       (horario laboral y cruce de horarios)
- *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/citas.json
+ *   6. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "citas"
  */
 
 class ValidadorCita {

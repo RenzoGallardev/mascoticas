@@ -9,7 +9,7 @@
  *   3. Front → back ........ conexion.enviar('POST', '/mascotas')
  *   4. Recibe en el back ... app.post('/api/mascotas')      (server.js)    
  *   5. Lógica .............. ControlMascotas.crear()        (revisa que el dueño exista)
- *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/mascotas.json
+ *   6. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "mascotas"
  */
 
 class ValidadorMascota {

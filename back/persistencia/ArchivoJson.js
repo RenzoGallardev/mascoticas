@@ -6,7 +6,7 @@
  *          La base de datos es Upstash Redis (en línea, conectada desde Vercel).
  *          Cada "tabla" es una LISTA guardada con un nombre.
  *          Ejemplo: 'clientes'  →  [ {id: 1, cedula: "123", ...}, ... ]
- *
+ * NOMBRE:  se llama ArchivoJson porque al principio guardaba en archivos .json; hoy guarda en Redis.
  * LA USAN: todas las clases de back/control/
  *
  * async / await: hablar con la base de datos tarda un poquito; "await" espera la respuesta.

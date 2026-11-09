@@ -16,7 +16,7 @@ const Cliente = require('../modelo/Cliente');
 class ControlClientes {
 
   constructor() {
-    this.archivo = new ArchivoJson('clientes'); // back/datos/clientes.json
+    this.archivo = new ArchivoJson('clientes'); // lista "clientes" en la base de datos Redis
   }
 
   // HU Crear cliente: valida → verifica que no exista → guarda

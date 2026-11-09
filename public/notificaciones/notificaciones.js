@@ -9,7 +9,7 @@
  *   3. Front → back ........ conexion.enviar('POST', '/notificaciones')
  *   4. Recibe en el back ... app.post('/api/notificaciones')   (server.js)    
  *   5. Lógica .............. ControlNotificaciones.crear()     (el cliente debe tener Telegram)
- *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/notificaciones.json (estado "Pendiente")
+ *   6. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "notificaciones" (estado "Pendiente")
  */
 
 class ValidadorNotificacion {

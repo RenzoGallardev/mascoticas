@@ -2,7 +2,7 @@
  * ARCHIVO: public/inicio/login.js
  * QUÉ HACE: Envía usuario y clave al back. Si son correctos, recuerda la sesión y abre el menú.
  * RECORRIDO: login.html → entrar() → conexion.enviar('POST', '/sesion')
- *            → server.js → ControlEmpleados.iniciarSesion() → datos/empleados.json
+ *            → server.js → ControlEmpleados.iniciarSesion() → base de datos Redis (lista "empleados")
  */
 
 // Se ejecuta al presionar "Entrar"
