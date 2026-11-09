@@ -163,6 +163,16 @@ function llenarSelect(idSelect, opciones) {
   document.getElementById(idSelect).innerHTML = html;
 }
 
+// BUSCADOR: se ejecuta cada vez que se escribe en la cajita de búsqueda.
+// Deja visibles en la lista solo las opciones que contienen lo escrito.
+function filtrarLista(idTexto, idSelect) {
+  const texto = document.getElementById(idTexto).value.toLowerCase();
+  const opciones = document.getElementById(idSelect).options;
+  for (const opcion of opciones) {
+    opcion.hidden = !opcion.text.toLowerCase().includes(texto); // hidden = esconder
+  }
+}
+
 // Muestra u oculta el formulario de crear
 function mostrarFormulario(idSeccion, idFormulario) {
   document.getElementById(idFormulario).reset(); // limpia los campos

@@ -22,6 +22,8 @@
     <section id="seccionFormulario" hidden>
       <h2>Registrar mascota</h2>
       <form id="formulario">
+        <!-- Buscador: al escribir, la lista de dueños muestra solo los que coinciden (filtrarLista en comun.js) -->
+        <label>Buscar dueño <input id="buscarDueno" placeholder="Escriba cédula o nombre" oninput="filtrarLista('buscarDueno', 'selectDueno')"></label>
         <label>Dueño *   <select name="clienteId" id="selectDueno"></select></label>
         <label>Nombre *  <input name="nombre"></label>
         <label>Especie * <input name="especie" placeholder="Perro, gato..."></label>

@@ -22,6 +22,8 @@
     <section id="seccionFormulario" hidden>
       <h2>Crear Cita Médica</h2>
       <form id="formulario">
+        <!-- Buscador: al escribir, la lista de clientes muestra solo los que coinciden (filtrarLista en comun.js) -->
+        <label>Buscar cliente <input id="buscarCliente" placeholder="Escriba cédula o nombre" oninput="filtrarLista('buscarCliente', 'selectCliente')"></label>
         <!-- onchange: al elegir un cliente se cargan SOLO sus mascotas -->
         <label>Cliente *     <select name="clienteId" id="selectCliente" onchange="cargarMascotasDelCliente()"></select></label>
         <label>Mascota *     <select name="mascotaId" id="selectMascota"></select></label>
