@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+  ARCHIVO: front/inicio/menu.html
+  QUÉ ES:  Menú principal. Muestra SOLO los módulos que el rol puede usar.
+  SU CÓDIGO: menu.js
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú · Mascoticas</title>
+  <link rel="stylesheet" href="../comun/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+  <main>
+    <h1 id="bienvenida"></h1>
+    <div class="menu">
+      <!-- "solo-secretaria": estos botones se esconden si entra un veterinario (ver menu.js) -->
+      <a href="../clientes/clientes.html" class="solo-secretaria">Clientes</a>
+      <a href="../mascotas/mascotas.html">Mascotas</a>
+      <a href="../empleados/empleados.html">Empleados</a>
+      <a href="../citas/citas.html">Citas</a>
+      <a href="../notificaciones/notificaciones.html" class="solo-secretaria">Notificaciones</a>
+    </div>
+  </main>
+
+  <script src="../comun/comun.js"></script>
+  <script src="menu.js"></script>
+</body>
+</html>

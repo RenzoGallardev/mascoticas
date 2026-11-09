@@ -1,0 +1,24 @@
+[
+  {
+    "cedula": "10000001",
+    "nombre": "Secretaria",
+    "apellido": "Prueba",
+    "telefono": "",
+    "correo": "",
+    "rol": "secretaria",
+    "usuario": "secretaria",
+    "clave": "secretaria123",
+    "id": 1
+  },
+  {
+    "cedula": "10000002",
+    "nombre": "Veterinario",
+    "apellido": "Prueba",
+    "telefono": "",
+    "correo": "",
+    "rol": "veterinario",
+    "usuario": "veterinario",
+    "clave": "veterinario123",
+    "id": 2
+  }
+]

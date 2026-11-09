@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+  ARCHIVO: front/notificaciones/notificaciones.html
+  QUÉ ES:  Interfaz "Gestión de Notificaciones" (solo secretaria)
+           - Formulario "Crear notificación".
+           - Tabla (HU Consultar notificación).
+  AUTOR:   Niyerlin Muñoz
+  SU CÓDIGO: notificaciones.js
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Notificaciones · Mascoticas</title>
+  <link rel="stylesheet" href="../comun/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+  <main>
+    <h1>Gestión de Notificaciones</h1>
+
+    <!-- ===== CREAR NOTIFICACIÓN ===== -->
+    <section id="seccionFormulario" hidden>
+      <h2>Crear notificación</h2>
+      <form id="formulario">
+        <!-- onchange: al elegir un cliente se revisa su Telegram y se cargan sus mascotas -->
+        <label>Cliente * <select name="clienteId" id="selectCliente" onchange="alElegirCliente()"></select></label>
+        <label>Mascota * <select name="mascotaId" id="selectMascota"></select></label>
+        <label>Tipo de servicio *
+          <select name="servicio">
+            <option value="">-- Seleccione --</option>
+            <option>Cita médica</option>
+            <option>Peluquería</option>
+          </select>
+        </label>
+        <label>Fecha * <input name="fecha" type="date"></label>
+        <label>Hora *  <input name="hora" type="time"></label>
+        <div class="botones">
+          <button type="button" class="principal" onclick="guardarNotificacion()">OK</button>
+          <button type="button" onclick="salir()">Salir</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== CONSULTAR NOTIFICACIÓN ===== -->
+    <section>
+      <div class="barra">
+        <button onclick="consultarNotificaciones()">Actualizar lista</button>
+        <button class="principal" onclick="abrirFormularioNotificacion()">+ Crear notificación</button>
+      </div>
+      <table id="tabla"></table>
+    </section>
+  </main>
+
+  <script src="../comun/comun.js"></script>
+  <script src="notificaciones.js"></script>
+</body>
+</html>

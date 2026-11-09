@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+  ARCHIVO: front/mascotas/mascotas.html
+  QUÉ ES:  Interfaz "Gestión de Mascotas"
+           - Formulario "Registrar mascota" (solo secretaria).
+           - Buscador y tabla (HU Consultar mascota: secretaria y veterinario).
+  AUTOR:   Ian Carmona
+  SU CÓDIGO: mascotas.js
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mascotas · Mascoticas</title>
+  <link rel="stylesheet" href="../comun/estilos.css">
+</head>
+<body>
+  <header id="encabezado"></header>
+  <main>
+    <h1>Gestión de Mascotas</h1>
+
+    <!-- ===== REGISTRAR MASCOTA ===== -->
+    <section id="seccionFormulario" hidden>
+      <h2>Registrar mascota</h2>
+      <form id="formulario">
+        <label>Dueño *   <select name="clienteId" id="selectDueno"></select></label>
+        <label>Nombre *  <input name="nombre"></label>
+        <label>Especie * <input name="especie" placeholder="Perro, gato..."></label>
+        <label>Raza      <input name="raza"></label>
+        <label>Sexo
+          <select name="sexo">
+            <option value="">-- Seleccione --</option>
+            <option>Macho</option>
+            <option>Hembra</option>
+          </select>
+        </label>
+        <label>Fecha de nacimiento <input name="fechaNacimiento" type="date"></label>
+        <div class="botones">
+          <button type="button" class="principal" onclick="guardarMascota()">OK</button>
+          <button type="button" onclick="salir()">Salir</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== CONSULTAR MASCOTA ===== -->
+    <section>
+      <div class="barra">
+        <input id="textoBuscar" placeholder="Buscar por nombre o especie">
+        <button onclick="consultarMascotas()">Buscar</button>
+        <button class="principal" id="botonNuevo" onclick="abrirFormularioMascota()">+ Registrar mascota</button>
+      </div>
+      <table id="tabla"></table>
+    </section>
+  </main>
+
+  <script src="../comun/comun.js"></script>
+  <script src="mascotas.js"></script>
+</body>
+</html>
