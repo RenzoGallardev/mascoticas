@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/empleados/empleados.js
+ * ARCHIVO: public/empleados/empleados.js
  * HISTORIAS: Crear empleado y Consultar empleado
  * AUTOR:   Ángel Araujo
  *
@@ -7,7 +7,7 @@
  *   1. Interfaz ............ empleados.html
  *   2. Valida campos ....... ValidadorEmpleado.validar()
  *   3. Front → back ........ conexion.enviar('POST', '/empleados')
- *   4. Recibe en el back ... app.post('/api/empleados')     (back/server.js)
+ *   4. Recibe en el back ... app.post('/api/empleados')     (server.js)    
  *   5. Lógica .............. ControlEmpleados.crear()       (revisa que no esté registrado)
  *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/empleados.json
  */

@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/comun/comun.js
+ * ARCHIVO: public/comun/comun.js
  *
  * QUÉ ES: Código que usan TODAS las pantallas:
  *   1. ConexionBack → la ÚNICA clase que habla con el back.
@@ -13,13 +13,7 @@
  *                   antes de pasar a la siguiente línea. Toda función que usa "await" lleva "async".
  */
 
-// ¿Dónde está el back?
-//   - En Vercel (la demo): en el proyecto "back" de Vercel.  ⚠ Si Vercel le da otra dirección, cámbiala aquí.
-//   - En la laptop:        en localhost:3000
-let DIRECCION_BACK = 'https://mascoticas-back.vercel.app/api';
-if (location.hostname == 'localhost' || location.hostname == '127.0.0.1') {
-  DIRECCION_BACK = 'http://localhost:3000/api';
-}
+const DIRECCION_BACK = '/api'; // el back está en la misma dirección que la página, en /api
 
 
 // ==================== 1. CONEXIÓN CON EL BACK ====================

@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/notificaciones/notificaciones.js
+ * ARCHIVO: public/notificaciones/notificaciones.js
  * HISTORIAS: Crear notificación y Consultar notificación
  * AUTOR:   Niyerlin Muñoz
  *
@@ -7,7 +7,7 @@
  *   1. Interfaz ............ notificaciones.html
  *   2. Valida campos ....... ValidadorNotificacion.validar()
  *   3. Front → back ........ conexion.enviar('POST', '/notificaciones')
- *   4. Recibe en el back ... app.post('/api/notificaciones')   (back/server.js)
+ *   4. Recibe en el back ... app.post('/api/notificaciones')   (server.js)    
  *   5. Lógica .............. ControlNotificaciones.crear()     (el cliente debe tener Telegram)
  *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/notificaciones.json (estado "Pendiente")
  */

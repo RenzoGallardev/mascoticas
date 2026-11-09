@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/mascotas/mascotas.js
+ * ARCHIVO: public/mascotas/mascotas.js
  * HISTORIAS: Registrar mascota y Consultar mascota
  * AUTOR:   Ian Carmona
  *
@@ -7,7 +7,7 @@
  *   1. Interfaz ............ mascotas.html
  *   2. Valida campos ....... ValidadorMascota.validar()
  *   3. Front → back ........ conexion.enviar('POST', '/mascotas')
- *   4. Recibe en el back ... app.post('/api/mascotas')      (back/server.js)
+ *   4. Recibe en el back ... app.post('/api/mascotas')      (server.js)    
  *   5. Lógica .............. ControlMascotas.crear()        (revisa que el dueño exista)
  *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/mascotas.json
  */

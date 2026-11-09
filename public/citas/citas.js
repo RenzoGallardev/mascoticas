@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/citas/citas.js
+ * ARCHIVO: public/citas/citas.js
  * HISTORIAS: Crear cita médica y Consultar citas del día
  * AUTOR:   Mouriss ElJawich
  *
@@ -7,7 +7,7 @@
  *   1. Interfaz ............ citas.html
  *   2. Valida campos ....... ValidadorCita.validar()
  *   3. Front → back ........ conexion.enviar('POST', '/citas')
- *   4. Recibe en el back ... app.post('/api/citas')     (back/server.js)
+ *   4. Recibe en el back ... app.post('/api/citas')     (server.js)    
  *   5. Lógica .............. ControlCitas.crear()       (horario laboral y cruce de horarios)
  *   6. Guarda .............. ArchivoJson.agregar()  →  back/datos/citas.json
  */

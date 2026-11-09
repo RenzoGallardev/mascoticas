@@ -1,23 +1,22 @@
 /**
- * ARCHIVO: back/server.js   ← AQUÍ EMPIEZA EL BACK (Vercel exige que se llame "server.js")
+ * ARCHIVO: server.js   ← AQUÍ EMPIEZA EL BACK (Vercel exige que se llame "server.js")
  *
- * QUÉ HACE: RECIBE todas las peticiones que manda el front.
+ * QUÉ HACE: RECIBE todas las peticiones que manda el front (las que empiezan por /api).
  *           Según la dirección (ruta) que llega, llama al método del control que corresponde
  *           y le devuelve la respuesta al front.
  *
- * RECORRIDO:  front  →  server.js (ruta)  →  control  →  ArchivoJson  →  datos/*.json
+ * RECORRIDO:  front (public/)  →  server.js (ruta)  →  back/control  →  back/persistencia  →  datos
  *
- * CÓMO SE ARRANCA:  npm start     (en la laptop queda en http://localhost:3000; en Vercel arranca solo)
+ * CÓMO SE ARRANCA:  npm start  →  abrir http://localhost:3000   (en Vercel arranca solo)
  */
 
 const express = require('express'); // librería para recibir peticiones del front
-const cors = require('cors');       // permite que el front (que corre en otra dirección) le hable al back
 
-const ControlClientes = require('./control/ControlClientes');
-const ControlMascotas = require('./control/ControlMascotas');
-const ControlEmpleados = require('./control/ControlEmpleados');
-const ControlCitas = require('./control/ControlCitas');
-const ControlNotificaciones = require('./control/ControlNotificaciones');
+const ControlClientes = require('./back/control/ControlClientes');
+const ControlMascotas = require('./back/control/ControlMascotas');
+const ControlEmpleados = require('./back/control/ControlEmpleados');
+const ControlCitas = require('./back/control/ControlCitas');
+const ControlNotificaciones = require('./back/control/ControlNotificaciones');
 
 const controlClientes = new ControlClientes();
 const controlMascotas = new ControlMascotas();
@@ -26,7 +25,7 @@ const controlCitas = new ControlCitas();
 const controlNotificaciones = new ControlNotificaciones();
 
 const app = express();
-app.use(cors());
+app.use(express.static(__dirname + '/public')); // en la laptop muestra las páginas del front (en Vercel lo hace Vercel solo)
 app.use(express.json()); // convierte los datos que llegan del front en un objeto (queda en req.body)
 
 // Respuesta cuando alguien que no es secretaria intenta crear algo

@@ -4,7 +4,7 @@
  * HISTORIAS: Crear cliente/dueño y Consultar cliente
  * AUTOR:   Renzo Gallardo
  *
- * LO LLAMA: back/server.js
+ * LO LLAMA: server.js
  * LLAMA A:  modelo/Cliente.js y persistencia/ArchivoJson.js
  *
  * Todos los métodos devuelven: { ok: true o false, mensaje: '...', datos: ... }

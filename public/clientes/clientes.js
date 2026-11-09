@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/clientes/clientes.js
+ * ARCHIVO: public/clientes/clientes.js
  * HISTORIAS: Crear cliente/dueño y Consultar cliente
  * AUTOR:   Renzo Gallardo
  *
@@ -7,7 +7,7 @@
  *   1. Interfaz ............ clientes.html (formulario "Registrar cliente")
  *   2. Valida campos ....... ValidadorCliente.validar()             (este archivo)
  *   3. Front → back ........ conexion.enviar('POST', '/clientes')   (comun.js)
- *   4. Recibe en el back ... app.post('/api/clientes')              (back/server.js)
+ *   4. Recibe en el back ... app.post('/api/clientes')              (server.js)    
  *   5. Lógica .............. ControlClientes.crear()                (back/control)
  *   6. Guarda .............. ArchivoJson.agregar()                  (back/persistencia)
  *   7. "Base de datos" ..... back/datos/clientes.json

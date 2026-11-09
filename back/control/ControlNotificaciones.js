@@ -4,7 +4,7 @@
  * HISTORIAS: Crear notificación y Consultar notificación
  * AUTOR:   Niyerlin Muñoz
  *
- * LO LLAMA: back/server.js
+ * LO LLAMA: server.js
  * LLAMA A:  modelo/Notificacion.js y persistencia/ArchivoJson.js
  *
  * NOTA: en este sprint la notificación solo se GUARDA con estado "Pendiente"

@@ -1,8 +1,8 @@
 {
-  "name": "mascoticas-back",
+  "name": "mascoticas",
   "version": "1.0.0",
   "private": true,
-  "description": "Back de Mascoticas (Equipo 57-7). Recibe las peticiones del front y guarda los datos.",
+  "description": "Mascoticas (Equipo 57-7): sistema interno para consultorio veterinario.",
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.41.0",
-    "cors": "^2.8.5",
     "express": "^5.3.0"
   }
 }

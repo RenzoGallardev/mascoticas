@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: front/inicio/menu.js
+ * ARCHIVO: public/inicio/menu.js
  * QUÉ HACE: Saluda al usuario y esconde los módulos que su rol no puede usar.
  *           (Matriz de impacto: Clientes y Notificaciones son solo de la secretaria)
  */

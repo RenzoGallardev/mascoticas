@@ -4,7 +4,7 @@
  * HISTORIAS: Crear cita médica y Consultar citas del día
  * AUTOR:   Mouriss ElJawich
  *
- * LO LLAMA: back/server.js
+ * LO LLAMA: server.js
  * LLAMA A:  modelo/Cita.js y persistencia/ArchivoJson.js
  */
 

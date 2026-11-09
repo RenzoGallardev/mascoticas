@@ -4,7 +4,7 @@
  * HISTORIAS: Registrar mascota y Consultar mascota
  * AUTOR:   Ian Carmona
  *
- * LO LLAMA: back/server.js
+ * LO LLAMA: server.js
  * LLAMA A:  modelo/Mascota.js y persistencia/ArchivoJson.js
  */
 

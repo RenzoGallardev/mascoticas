@@ -5,7 +5,7 @@
  *            (+ Iniciar sesión, que NO es historia: es el requisito no funcional de seguridad)
  * AUTOR:   Ángel Araujo
  *
- * LO LLAMA: back/server.js
+ * LO LLAMA: server.js
  * LLAMA A:  modelo/Empleado.js y persistencia/ArchivoJson.js
  */
 

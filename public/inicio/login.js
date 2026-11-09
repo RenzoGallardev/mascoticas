@@ -1,8 +1,8 @@
 /**
- * ARCHIVO: front/inicio/login.js
+ * ARCHIVO: public/inicio/login.js
  * QUÉ HACE: Envía usuario y clave al back. Si son correctos, recuerda la sesión y abre el menú.
  * RECORRIDO: login.html → entrar() → conexion.enviar('POST', '/sesion')
- *            → back/server.js → ControlEmpleados.iniciarSesion() → datos/empleados.json
+ *            → server.js → ControlEmpleados.iniciarSesion() → datos/empleados.json
  */
 
 // Se ejecuta al presionar "Entrar"
