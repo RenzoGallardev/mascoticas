@@ -4,7 +4,7 @@ Sistema interno para un consultorio veterinario. Primer Sprint.
 
 ## Link
 
-**https://mascoticas.vercel.app** — se abre desde cualquier dispositivo.
+**[https://mascoticas.vercel.app](https://mascoticas.vercel.app/inicio/menu.html)** — se abre desde cualquier dispositivo.
 
 Está publicado en Vercel y conectado a GitHub: cada vez que se sube algo a GitHub, Vercel se actualiza solo.
 Los datos se guardan en una base de datos en línea (Upstash Redis, conectada desde la pestaña Storage de Vercel).
