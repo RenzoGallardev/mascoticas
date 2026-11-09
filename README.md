@@ -2,22 +2,12 @@
 
 Sistema interno para un consultorio veterinario. Primer Sprint.
 
-## Publicarlo en Vercel (una sola vez)
+## Link
 
-1. En vercel.com: **Add New → Project** → elegir el repositorio `mascoticas` → **Deploy**.
-2. En el proyecto: **Storage → Create Database → Upstash for Redis** (gratis) → **Connect**.
-   (Es la base de datos en línea. Vercel no deja guardar archivos.)
-3. **Deployments → ⋯ → Redeploy**.
+**https://mascoticas.vercel.app** — se abre desde cualquier dispositivo.
 
-Listo. El link que da Vercel es el de la presentación. Cada vez que se sube algo a GitHub, Vercel se actualiza solo.
-
-## Correrlo en la laptop (opcional)
-
-```
-npm install
-npm start
-```
-Abrir **http://localhost:3000**
+Está publicado en Vercel y conectado a GitHub: cada vez que se sube algo a GitHub, Vercel se actualiza solo.
+Los datos se guardan en una base de datos en línea (Upstash Redis, conectada desde la pestaña Storage de Vercel).
 
 ### Usuarios de prueba (están en `back/datos/empleados.json`)
 | Usuario | Clave | Rol |
@@ -43,7 +33,7 @@ back/                  ← BACK: el resto
   control/             LÓGICA: reglas de negocio (una clase por módulo)
   modelo/              ENTIDADES: qué datos tiene un cliente, una mascota, etc.
   persistencia/        ArchivoJson: la única clase que lee y guarda datos
-  datos/               datos con los que arranca el sistema
+  datos/               datos con los que arranca el sistema (los usuarios de prueba)
 ```
 
 Front y back siguen separados: el front solo habla con el back pidiendo direcciones `/api/...`.
@@ -60,7 +50,7 @@ Todas las historias siguen **el mismo camino**. Ejemplo con *Crear cliente*:
 | 4 | ¿Quién recibe en el back? | `app.post('/api/clientes')` | `server.js` |
 | 5 | ¿Y qué hace después? | `ControlClientes.crear()`: revisa que la cédula no exista | `back/control/ControlClientes.js` |
 | 6 | ¿Quién guarda? | `ArchivoJson.agregar()` | `back/persistencia/ArchivoJson.js` |
-| 7 | ¿Dónde queda? | En Vercel: base de datos Upstash Redis. En la laptop: `back/datos/clientes.json` | |
+| 7 | ¿Dónde queda? | En la base de datos en línea (Upstash Redis), en la lista "clientes" | |
 
 Para las demás historias, cambia "clientes" por "mascotas", "empleados", "citas" o "notificaciones".
 

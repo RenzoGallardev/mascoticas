@@ -7,7 +7,7 @@
  *
  * RECORRIDO:  front (public/)  →  server.js (ruta)  →  back/control  →  back/persistencia  →  datos
  *
- * CÓMO SE ARRANCA:  npm start  →  abrir http://localhost:3000   (en Vercel arranca solo)
+ * CÓMO SE ARRANCA:  Vercel lo arranca solo (las páginas de public/ también las publica Vercel)
  */
 
 const express = require('express'); // librería para recibir peticiones del front
@@ -25,7 +25,6 @@ const controlCitas = new ControlCitas();
 const controlNotificaciones = new ControlNotificaciones();
 
 const app = express();
-app.use(express.static(__dirname + '/public')); // en la laptop muestra las páginas del front (en Vercel lo hace Vercel solo)
 app.use(express.json()); // convierte los datos que llegan del front en un objeto (queda en req.body)
 
 // Respuesta cuando alguien que no es secretaria intenta crear algo
@@ -114,5 +113,5 @@ app.use(function (error, req, res, next) {
 
 // ---------- Arranca el servidor ----------
 app.listen(3000, function () {
-  console.log('Back de Mascoticas listo en http://localhost:3000');
+  console.log('Back de Mascoticas listo');
 });
