@@ -29,6 +29,11 @@ const controlNotificaciones = new ControlNotificaciones();
 const app = express();
 app.use(express.json()); // convierte los datos que llegan del front en un objeto (queda en req.body)
 
+// Si alguien entra a la dirección principal (sin nada después), lo manda a la pantalla de login
+app.get('/', function (req, res) {
+  res.redirect('/inicio/login.html');
+});
+
 // Respuesta cuando alguien que no es secretaria intenta crear algo
 const SOLO_SECRETARIA = { ok: false, mensaje: 'Acceso permitido solo a usuarios con rol de secretaria' };
 
