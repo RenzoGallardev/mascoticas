@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El cerebro de Citas: revisa el horario y que no haya dos citas a la misma hora; guarda con ArchivoJson. Lo llama server.js.
+ *
  * ARCHIVO: back/control/ControlCitas.js
  * CAPA:    control (lógica y reglas de negocio)
  * HISTORIAS: Crear cita médica y Consultar citas del día

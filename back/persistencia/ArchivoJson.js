@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: Guarda y lee la información en Redis (la base de datos). Es el ÚNICO que toca la BD; lo usan los Control.
+ *
  * ARCHIVO: back/persistencia/ArchivoJson.js
  * CAPA:    persistencia (acceso a la base de datos)
  *

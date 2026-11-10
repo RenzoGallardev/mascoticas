@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: La puerta del back. Recibe lo que manda el front (/api/...) y se lo pasa al Control que toca.
+ *
  * ARCHIVO: server.js   ← AQUÍ EMPIEZA EL BACK (Vercel exige que se llame "server.js")
  *
  * QUÉ HACE: RECIBE todas las peticiones que manda el front (las que empiezan por /api).

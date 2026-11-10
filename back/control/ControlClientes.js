@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El cerebro de Clientes: revisa que la cédula no se repita y le pide a ArchivoJson que guarde. Lo llama server.js.
+ *
  * ARCHIVO: back/control/ControlClientes.js
  * CAPA:    control (lógica y reglas de negocio)
  * HISTORIAS: Crear cliente/dueño y Consultar cliente

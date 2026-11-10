@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El molde de un empleado: solo dice qué datos tiene. Lo usa ControlEmpleados.
+ *
  * ARCHIVO: back/modelo/Empleado.js
  * CAPA:    modelo (entidad)
  * QUÉ ES:  Define QUÉ DATOS tiene un empleado (secretaria o veterinario).

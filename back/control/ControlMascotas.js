@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El cerebro de Mascotas: revisa que el dueño exista y le pide a ArchivoJson que guarde. Lo llama server.js.
+ *
  * ARCHIVO: back/control/ControlMascotas.js
  * CAPA:    control (lógica y reglas de negocio)
  * HISTORIAS: Registrar mascota y Consultar mascota

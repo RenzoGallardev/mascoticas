@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El molde de una cita: solo dice qué datos tiene. Lo usa ControlCitas.
+ *
  * ARCHIVO: back/modelo/Cita.js
  * CAPA:    modelo (entidad)
  * QUÉ ES:  Define QUÉ DATOS tiene una cita médica.

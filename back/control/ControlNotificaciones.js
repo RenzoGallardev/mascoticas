@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El cerebro de Notificaciones: revisa que el cliente tenga Telegram; guarda con ArchivoJson. Lo llama server.js.
+ *
  * ARCHIVO: back/control/ControlNotificaciones.js
  * CAPA:    control (lógica y reglas de negocio)
  * HISTORIAS: Crear notificación y Consultar notificación

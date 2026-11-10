@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El molde de una notificación: solo dice qué datos tiene. Lo usa ControlNotificaciones.
+ *
  * ARCHIVO: back/modelo/Notificacion.js
  * CAPA:    modelo (entidad)
  * QUÉ ES:  Define QUÉ DATOS tiene una notificación para un cliente.

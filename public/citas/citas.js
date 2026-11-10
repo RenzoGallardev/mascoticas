@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El código de la pantalla Citas: valida el formulario y lo manda al back con comun.js. Lo activan los botones de citas.html.
+ *
  * ARCHIVO: public/citas/citas.js
  * HISTORIAS: Crear cita médica y Consultar citas del día
  * AUTOR:   Mouriss ElJawich

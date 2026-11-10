@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El molde de un cliente: solo dice qué datos tiene. Lo usa ControlClientes.
+ *
  * ARCHIVO: back/modelo/Cliente.js
  * CAPA:    modelo (entidad)
  * QUÉ ES:  Define QUÉ DATOS tiene un cliente (dueño de mascota).

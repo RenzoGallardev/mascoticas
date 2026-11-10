@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El código de la pantalla Empleados: valida el formulario y lo manda al back con comun.js. Lo activan los botones de empleados.html.
+ *
  * ARCHIVO: public/empleados/empleados.js
  * HISTORIAS: Crear empleado y Consultar empleado
  * AUTOR:   Ángel Araujo

@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El código de la pantalla Notificaciones: valida el formulario y lo manda al back con comun.js. Lo activan los botones de notificaciones.html.
+ *
  * ARCHIVO: public/notificaciones/notificaciones.js
  * HISTORIAS: Crear notificación y Consultar notificación
  * AUTOR:   Niyerlin Muñoz

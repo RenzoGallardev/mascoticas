@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: Caja de herramientas que usan TODAS las pantallas. Aquí está conexion.enviar(), lo único que manda datos al back.
+ *
  * ARCHIVO: public/comun/comun.js
  *
  * QUÉ ES: Código que usan TODAS las pantallas:

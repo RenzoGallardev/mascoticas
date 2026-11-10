@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: Manda usuario y clave al back (con comun.js). Si están bien, guarda la sesión y abre el menú.
+ *
  * ARCHIVO: public/inicio/login.js
  * QUÉ HACE: Envía usuario y clave al back. Si son correctos, recuerda la sesión y abre el menú.
  * RECORRIDO: login.html → entrar() → conexion.enviar('POST', '/sesion')

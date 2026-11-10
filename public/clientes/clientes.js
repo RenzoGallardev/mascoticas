@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El código de la pantalla Clientes: valida el formulario y lo manda al back con comun.js. Lo activan los botones de clientes.html.
+ *
  * ARCHIVO: public/clientes/clientes.js
  * HISTORIAS: Crear cliente/dueño y Consultar cliente
  * AUTOR:   Renzo Gallardo

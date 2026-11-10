@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El molde de una mascota: solo dice qué datos tiene. Lo usa ControlMascotas.
+ *
  * ARCHIVO: back/modelo/Mascota.js
  * CAPA:    modelo (entidad)
  * QUÉ ES:  Define QUÉ DATOS tiene una mascota.

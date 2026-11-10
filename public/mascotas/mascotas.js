@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El código de la pantalla Mascotas: valida el formulario y lo manda al back con comun.js. Lo activan los botones de mascotas.html.
+ *
  * ARCHIVO: public/mascotas/mascotas.js
  * HISTORIAS: Registrar mascota y Consultar mascota
  * AUTOR:   Ian Carmona

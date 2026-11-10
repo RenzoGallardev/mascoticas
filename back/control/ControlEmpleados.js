@@ -1,4 +1,6 @@
 /**
+ * RESUMEN: El cerebro de Empleados y del login: revisa usuario/clave y que no se repita el empleado; guarda con ArchivoJson. Lo llama server.js.
+ *
  * ARCHIVO: back/control/ControlEmpleados.js
  * CAPA:    control (lógica y reglas de negocio)
  * HISTORIAS: Crear empleado y Consultar empleado
