@@ -41,8 +41,8 @@ Todas las historias siguen **el mismo camino**. Ejemplo con *Crear cliente*:
 | 1 | Vista | ¿Dónde está la interfaz? | Sección `#vista-clientes` (formulario "Registrar cliente") | `public/mascoticas.html` |
 | 2 | Vista | ¿Qué clase maneja la pantalla y valida los campos? | `VistaClientes.guardar()` y `ValidadorCliente.validar()` | `public/mascoticas.js` |
 | 3 | Vista → Controlador | ¿Qué método comunica la Vista con el Controlador? | `conexion.enviar('POST', '/clientes')` | `public/mascoticas.js` |
-| 4 | Enrutador | ¿Quién recibe la ruta en el servidor? | `app.post('/api/clientes', ...)` | `server.js` |
-| 5 | Controlador | ¿Qué hace el Controlador? | `ControlClientes.crear(req, res)`: verifica que el rol sea `secretaria` y delega al Modelo | `back/control/ControlClientes.js` |
+| 4 | Enrutador | ¿Quién recibe la ruta y verifica el rol `secretaria`? | `app.post('/api/clientes', soloSecretaria, ...)` | `server.js` |
+| 5 | Controlador | ¿Qué hace el Controlador? | `ControlClientes.crear(req, res)`: delega la petición al Modelo y responde JSON | `back/control/ControlClientes.js` |
 | 6 | Modelo | ¿Dónde están las reglas de negocio y el guardado? | `Cliente.crear(datos)`: revisa que la cédula no exista y guarda con `ArchivoJson.agregar()` | `back/modelo/Cliente.js` |
 | 7 | Modelo (Persistencia) | ¿Quién toca la base de datos? | `ArchivoJson.agregar()` → Upstash Redis, lista `"clientes"` | `back/persistencia/ArchivoJson.js` |
 
@@ -67,4 +67,4 @@ Para las demás historias, cambia "clientes" por "mascotas", "empleados", "citas
   - Horario de 8–12 y 2–6, y no dos citas a la misma hora: `Cita.crear()` (`back/modelo/Cita.js`)
   - Mascota con dueño existente: `Mascota.crear()` (`back/modelo/Mascota.js`)
   - Cliente con Telegram: `Notificacion.crear()` (`back/modelo/Notificacion.js`)
-  - Solo la secretaria crea: cada Controlador en `back/control/Control*.js` (`if (req.headers.rol != 'secretaria')`)
+  - Solo la secretaria crea: middleware `soloSecretaria` en `server.js` (`if (req.headers.rol != 'secretaria')`)

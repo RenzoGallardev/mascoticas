@@ -1,38 +1,27 @@
 /**
- * RESUMEN: Lógica unificada de la capa Vista (MVC) de Mascoticas.
- *          Incluye conexión con Controladores, sesión, ayudantes de interfaz,
+ * RESUMEN: Lógica unificada y simplificada de la capa Vista (MVC) de Mascoticas.
+ *          Incluye conexión con Controladores, sesión, ayudantes comunes,
  *          los 5 Validadores, las 7 Vistas y el navegador entre pantallas.
  *
  * ARCHIVO:  public/mascoticas.js
  * CAPA MVC: Vista (lógica de presentación unificada)
- *
- * RECORRIDO MVC:
- *   Vista (mascoticas.html + mascoticas.js) → conexion.enviar() → server.js
- *   → Controlador (back/control/Control*.js) → Modelo (back/modelo/*.js) → ArchivoJson (Redis)
  */
 
-const DIRECCION_BACK = '/api'; // el servidor está en la misma dirección, bajo /api
+const DIRECCION_BACK = '/api';
 
 
 // ==================== 1. CONEXIÓN CON EL CONTROLADOR ====================
 
 class ConexionBack {
-
-  // metodo: 'GET' (consultar) o 'POST' (crear)
-  // ruta:   ej '/clientes'
-  // datos:  los datos del formulario (solo para POST)
-  // Devuelve lo que responde el Controlador: { ok, mensaje, datos }
   async enviar(metodo, ruta, datos) {
     const opciones = {
       method: metodo,
       headers: {
         'Content-Type': 'application/json',
-        'rol': leerSesion().rol || '' // le dice al Controlador quién está usando el sistema
+        'rol': leerSesion().rol || ''
       }
     };
-    if (metodo == 'POST') {
-      opciones.body = JSON.stringify(datos);
-    }
+    if (metodo == 'POST') opciones.body = JSON.stringify(datos);
 
     try {
       const respuesta = await fetch(DIRECCION_BACK + ruta, opciones);
@@ -48,17 +37,15 @@ const conexion = new ConexionBack();
 
 // ==================== 2. SESIÓN Y AYUDANTES DE VISTA ====================
 
-function guardarSesion(datos) {
+const guardarSesion = (datos) => {
   sessionStorage.setItem('nombre', datos.nombre);
   sessionStorage.setItem('rol', datos.rol);
-}
+};
 
-function leerSesion() {
-  return {
-    nombre: sessionStorage.getItem('nombre'),
-    rol: sessionStorage.getItem('rol')
-  };
-}
+const leerSesion = () => ({
+  nombre: sessionStorage.getItem('nombre'),
+  rol: sessionStorage.getItem('rol')
+});
 
 function cerrarSesion() {
   if (confirm('¿Desea cerrar sesión?')) {
@@ -87,19 +74,15 @@ function ocultarEncabezado() {
 }
 
 function leerFormulario(idFormulario) {
-  const formulario = document.getElementById(idFormulario);
   const datos = {};
-  for (const campo of formulario.elements) {
-    if (campo.name != '') {
-      datos[campo.name] = campo.value.trim();
-    }
+  for (const campo of document.getElementById(idFormulario).elements) {
+    if (campo.name) datos[campo.name] = campo.value.trim();
   }
   return datos;
 }
 
 function limpiarErroresFormulario(idFormulario) {
-  const formulario = document.getElementById(idFormulario);
-  for (const campo of formulario.elements) {
+  for (const campo of document.getElementById(idFormulario).elements) {
     campo.classList.remove('campo-error');
   }
 }
@@ -107,54 +90,38 @@ function limpiarErroresFormulario(idFormulario) {
 function mostrarErrores(idFormulario, errores) {
   const formulario = document.getElementById(idFormulario);
   limpiarErroresFormulario(idFormulario);
-
-  if (errores.length == 0) {
-    return true;
-  }
+  if (errores.length == 0) return true;
 
   let mensaje = 'Datos inválidos:';
   for (const error of errores) {
     formulario.elements[error.campo].classList.add('campo-error');
-    mensaje = mensaje + '\n- ' + error.mensaje;
+    mensaje += '\n- ' + error.mensaje;
   }
   alert(mensaje);
   return false;
 }
 
 function dibujarTabla(idTabla, filas, columnas) {
-  let html = '<tr>';
-  for (const columna of columnas) {
-    html = html + '<th>' + columna.titulo + '</th>';
-  }
-  html = html + '</tr>';
-
+  let html = '<tr>' + columnas.map((c) => '<th>' + c.titulo + '</th>').join('') + '</tr>';
   if (filas.length == 0) {
-    html = html + '<tr><td colspan="' + columnas.length + '">No hay registros</td></tr>';
+    html += '<tr><td colspan="' + columnas.length + '">No hay registros</td></tr>';
+  } else {
+    html += filas.map((fila) =>
+      '<tr>' + columnas.map((c) => '<td>' + fila[c.campo] + '</td>').join('') + '</tr>'
+    ).join('');
   }
-
-  for (const fila of filas) {
-    html = html + '<tr>';
-    for (const columna of columnas) {
-      html = html + '<td>' + fila[columna.campo] + '</td>';
-    }
-    html = html + '</tr>';
-  }
-
   document.getElementById(idTabla).innerHTML = html;
 }
 
 function llenarSelect(idSelect, opciones) {
-  let html = '<option value="">-- Seleccione --</option>';
-  for (const opcion of opciones) {
-    html = html + '<option value="' + opcion.valor + '">' + opcion.texto + '</option>';
-  }
-  document.getElementById(idSelect).innerHTML = html;
+  document.getElementById(idSelect).innerHTML =
+    '<option value="">-- Seleccione --</option>' +
+    opciones.map((o) => '<option value="' + o.valor + '">' + o.texto + '</option>').join('');
 }
 
 function filtrarLista(idTexto, idSelect) {
   const texto = document.getElementById(idTexto).value.toLowerCase();
-  const opciones = document.getElementById(idSelect).options;
-  for (const opcion of opciones) {
+  for (const opcion of document.getElementById(idSelect).options) {
     opcion.hidden = !opcion.text.toLowerCase().includes(texto);
   }
 }
@@ -175,8 +142,77 @@ function salir(idSeccion) {
   }
 }
 
-function fechaDeHoy() {
-  return new Date().toLocaleDateString('en-CA');
+const fechaDeHoy = () => new Date().toLocaleDateString('en-CA');
+
+// Motor declarativo reutilizado por los 5 Validadores
+function validarCampos(datos, reglas) {
+  const errores = [];
+  for (const regla of reglas) {
+    const valor = datos[regla.campo] || '';
+    if (regla.obligatorio && valor == '') {
+      errores.push({ campo: regla.campo, mensaje: regla.obligatorio });
+    } else if (regla.numerico && valor != '' && isNaN(valor)) {
+      errores.push({ campo: regla.campo, mensaje: regla.numerico });
+    } else if (regla.correo && valor != '' && !valor.includes('@')) {
+      errores.push({ campo: regla.campo, mensaje: regla.correo });
+    } else if (regla.minLongitud && valor.length < regla.minLongitud.min) {
+      errores.push({ campo: regla.campo, mensaje: regla.minLongitud.mensaje });
+    } else if (regla.desdeHoy && valor != '' && valor < fechaDeHoy()) {
+      errores.push({ campo: regla.campo, mensaje: regla.desdeHoy });
+    }
+  }
+  return errores;
+}
+
+// Flujo común para crear registros desde cualquier Vista
+async function guardarRegistro({ form, seccion, validador, pregunta, ruta, alGuardar }) {
+  const datos = leerFormulario(form);
+  if (!mostrarErrores(form, validador.validar(datos))) return;
+  if (!confirm(pregunta)) return;
+
+  const respuesta = await conexion.enviar('POST', ruta, datos);
+  alert(respuesta.mensaje);
+  if (respuesta.ok) {
+    ocultarFormulario(seccion);
+    await alGuardar(datos);
+  }
+}
+
+// Flujo común para consultar y dibujar tablas
+async function consultarTabla(idTabla, ruta, columnas) {
+  const respuesta = await conexion.enviar('GET', ruta);
+  if (!respuesta.ok) {
+    alert(respuesta.mensaje);
+    return;
+  }
+  dibujarTabla(idTabla, respuesta.datos, columnas);
+}
+
+// Ayudantes comunes para llenar <select> de clientes y mascotas
+async function obtenerClientes() {
+  const respuesta = await conexion.enviar('GET', '/clientes?buscar=');
+  if (!respuesta.ok) {
+    alert(respuesta.mensaje);
+    return null;
+  }
+  return respuesta.datos;
+}
+
+function opcionesDeClientes(clientes) {
+  return clientes.map((c) => ({ valor: c.id, texto: c.cedula + ' - ' + c.nombre + ' ' + c.apellido }));
+}
+
+async function cargarSelectMascotas(idSelect, clienteId) {
+  if (!clienteId) {
+    llenarSelect(idSelect, []);
+    return;
+  }
+  const respuesta = await conexion.enviar('GET', '/mascotas?buscar=&clienteId=' + encodeURIComponent(clienteId));
+  if (!respuesta.ok) {
+    alert(respuesta.mensaje);
+    return;
+  }
+  llenarSelect(idSelect, respuesta.datos.map((m) => ({ valor: m.id, texto: m.nombre + ' (' + m.especie + ')' })));
 }
 
 
@@ -185,129 +221,65 @@ function fechaDeHoy() {
 // Clientes — Renzo Gallardo
 class ValidadorCliente {
   validar(datos) {
-    const errores = [];
-
-    if (datos.cedula == '') {
-      errores.push({ campo: 'cedula', mensaje: 'La cédula es obligatoria' });
-    } else if (isNaN(datos.cedula)) {
-      errores.push({ campo: 'cedula', mensaje: 'La cédula solo debe tener números' });
-    }
-
-    if (datos.nombre == '') {
-      errores.push({ campo: 'nombre', mensaje: 'El nombre es obligatorio' });
-    }
-
-    if (datos.apellido == '') {
-      errores.push({ campo: 'apellido', mensaje: 'El apellido es obligatorio' });
-    }
-
-    if (datos.telefono == '') {
-      errores.push({ campo: 'telefono', mensaje: 'El teléfono es obligatorio' });
-    } else if (isNaN(datos.telefono)) {
-      errores.push({ campo: 'telefono', mensaje: 'El teléfono solo debe tener números' });
-    }
-
-    if (datos.correo != '' && !datos.correo.includes('@')) {
-      errores.push({ campo: 'correo', mensaje: 'El correo no es válido' });
-    }
-
-    return errores;
+    return validarCampos(datos, [
+      { campo: 'cedula',   obligatorio: 'La cédula es obligatoria',   numerico: 'La cédula solo debe tener números' },
+      { campo: 'nombre',   obligatorio: 'El nombre es obligatorio' },
+      { campo: 'apellido', obligatorio: 'El apellido es obligatorio' },
+      { campo: 'telefono', obligatorio: 'El teléfono es obligatorio', numerico: 'El teléfono solo debe tener números' },
+      { campo: 'correo',   correo: 'El correo no es válido' }
+    ]);
   }
 }
 
 // Mascotas — Ian Carmona
 class ValidadorMascota {
   validar(datos) {
-    const errores = [];
-    if (datos.clienteId == '') {
-      errores.push({ campo: 'clienteId', mensaje: 'Debe seleccionar el dueño (no hay mascotas sin dueño)' });
-    }
-    if (datos.nombre == '') {
-      errores.push({ campo: 'nombre', mensaje: 'El nombre es obligatorio' });
-    }
-    if (datos.especie == '') {
-      errores.push({ campo: 'especie', mensaje: 'La especie es obligatoria' });
-    }
-    return errores;
+    return validarCampos(datos, [
+      { campo: 'clienteId', obligatorio: 'Debe seleccionar el dueño (no hay mascotas sin dueño)' },
+      { campo: 'nombre',    obligatorio: 'El nombre es obligatorio' },
+      { campo: 'especie',   obligatorio: 'La especie es obligatoria' }
+    ]);
   }
 }
 
 // Empleados — Ángel Araujo
 class ValidadorEmpleado {
   validar(datos) {
-    const errores = [];
-    if (datos.cedula == '') {
-      errores.push({ campo: 'cedula', mensaje: 'La cédula es obligatoria' });
-    } else if (isNaN(datos.cedula)) {
-      errores.push({ campo: 'cedula', mensaje: 'La cédula solo debe tener números' });
-    }
-    if (datos.rol == '') {
-      errores.push({ campo: 'rol', mensaje: 'El rol es obligatorio' });
-    }
-    if (datos.nombre == '') {
-      errores.push({ campo: 'nombre', mensaje: 'El nombre es obligatorio' });
-    }
-    if (datos.apellido == '') {
-      errores.push({ campo: 'apellido', mensaje: 'El apellido es obligatorio' });
-    }
-    if (datos.usuario == '') {
-      errores.push({ campo: 'usuario', mensaje: 'El usuario es obligatorio' });
-    }
-    if (datos.clave.length < 6) {
-      errores.push({ campo: 'clave', mensaje: 'La clave debe tener al menos 6 caracteres' });
-    }
-    return errores;
+    return validarCampos(datos, [
+      { campo: 'cedula',   obligatorio: 'La cédula es obligatoria', numerico: 'La cédula solo debe tener números' },
+      { campo: 'rol',      obligatorio: 'El rol es obligatorio' },
+      { campo: 'nombre',   obligatorio: 'El nombre es obligatorio' },
+      { campo: 'apellido', obligatorio: 'El apellido es obligatorio' },
+      { campo: 'usuario',  obligatorio: 'El usuario es obligatorio' },
+      { campo: 'clave',    minLongitud: { min: 6, mensaje: 'La clave debe tener al menos 6 caracteres' } }
+    ]);
   }
 }
 
 // Citas — Mouriss ElJawich
 class ValidadorCita {
   validar(datos) {
-    const errores = [];
-    if (datos.clienteId == '') {
-      errores.push({ campo: 'clienteId', mensaje: 'Seleccione el cliente' });
-    }
-    if (datos.mascotaId == '') {
-      errores.push({ campo: 'mascotaId', mensaje: 'Seleccione la mascota' });
-    }
-    if (datos.veterinarioId == '') {
-      errores.push({ campo: 'veterinarioId', mensaje: 'Seleccione el veterinario' });
-    }
-    if (datos.tipo == '') {
-      errores.push({ campo: 'tipo', mensaje: 'Seleccione el tipo de consulta' });
-    }
-    if (datos.fecha == '') {
-      errores.push({ campo: 'fecha', mensaje: 'Seleccione la fecha' });
-    } else if (datos.fecha < fechaDeHoy()) {
-      errores.push({ campo: 'fecha', mensaje: 'La fecha no puede ser anterior a hoy' });
-    }
-    if (datos.hora == '') {
-      errores.push({ campo: 'hora', mensaje: 'Seleccione la hora' });
-    }
-    return errores;
+    return validarCampos(datos, [
+      { campo: 'clienteId',     obligatorio: 'Seleccione el cliente' },
+      { campo: 'mascotaId',     obligatorio: 'Seleccione la mascota' },
+      { campo: 'veterinarioId', obligatorio: 'Seleccione el veterinario' },
+      { campo: 'tipo',          obligatorio: 'Seleccione el tipo de consulta' },
+      { campo: 'fecha',         obligatorio: 'Seleccione la fecha', desdeHoy: 'La fecha no puede ser anterior a hoy' },
+      { campo: 'hora',          obligatorio: 'Seleccione la hora' }
+    ]);
   }
 }
 
 // Notificaciones — Niyerlin Muñoz
 class ValidadorNotificacion {
   validar(datos) {
-    const errores = [];
-    if (datos.clienteId == '') {
-      errores.push({ campo: 'clienteId', mensaje: 'Seleccione el cliente' });
-    }
-    if (datos.mascotaId == '') {
-      errores.push({ campo: 'mascotaId', mensaje: 'Seleccione la mascota' });
-    }
-    if (datos.servicio == '') {
-      errores.push({ campo: 'servicio', mensaje: 'Seleccione el tipo de servicio' });
-    }
-    if (datos.fecha == '') {
-      errores.push({ campo: 'fecha', mensaje: 'Seleccione la fecha' });
-    }
-    if (datos.hora == '') {
-      errores.push({ campo: 'hora', mensaje: 'Seleccione la hora' });
-    }
-    return errores;
+    return validarCampos(datos, [
+      { campo: 'clienteId', obligatorio: 'Seleccione el cliente' },
+      { campo: 'mascotaId', obligatorio: 'Seleccione la mascota' },
+      { campo: 'servicio',  obligatorio: 'Seleccione el tipo de servicio' },
+      { campo: 'fecha',     obligatorio: 'Seleccione la fecha' },
+      { campo: 'hora',      obligatorio: 'Seleccione la hora' }
+    ]);
   }
 }
 
@@ -322,13 +294,13 @@ class VistaLogin {
 
   async entrar() {
     const datos = leerFormulario('formLogin');
-    if (datos.usuario == '' || datos.clave == '') {
+    if (!datos.usuario || !datos.clave) {
       alert('Ingrese usuario y clave');
       return;
     }
 
     const respuesta = await conexion.enviar('POST', '/sesion', datos);
-    if (respuesta.ok == false) {
+    if (!respuesta.ok) {
       alert(respuesta.mensaje);
       return;
     }
@@ -343,9 +315,7 @@ class VistaMenu {
   abrir() {
     const sesion = leerSesion();
     document.getElementById('bienvenida').textContent = 'Bienvenido(a), ' + sesion.nombre;
-
-    const botones = document.querySelectorAll('#vista-menu .solo-secretaria');
-    for (const boton of botones) {
+    for (const boton of document.querySelectorAll('#vista-menu .solo-secretaria')) {
       boton.hidden = sesion.rol != 'secretaria';
     }
   }
@@ -353,45 +323,27 @@ class VistaMenu {
 
 // ---------- Vista: Clientes (Renzo Gallardo) ----------
 class VistaClientes {
-  constructor() {
-    this.validador = new ValidadorCliente();
-  }
+  constructor() { this.validador = new ValidadorCliente(); }
 
   abrir() {
     ocultarFormulario('seccionFormClientes');
     this.consultar();
   }
 
-  async guardar() {
-    const datos = leerFormulario('formClientes');
-
-    const errores = this.validador.validar(datos);
-    if (mostrarErrores('formClientes', errores) == false) {
-      return;
-    }
-
-    if (confirm('¿Desea guardar el cliente?') == false) {
-      return;
-    }
-
-    const respuesta = await conexion.enviar('POST', '/clientes', datos);
-    alert(respuesta.mensaje);
-
-    if (respuesta.ok) {
-      ocultarFormulario('seccionFormClientes');
-      this.consultar();
-    }
+  guardar() {
+    return guardarRegistro({
+      form: 'formClientes',
+      seccion: 'seccionFormClientes',
+      validador: this.validador,
+      pregunta: '¿Desea guardar el cliente?',
+      ruta: '/clientes',
+      alGuardar: () => this.consultar()
+    });
   }
 
-  async consultar() {
+  consultar() {
     const texto = document.getElementById('buscarClientes').value;
-    const respuesta = await conexion.enviar('GET', '/clientes?buscar=' + encodeURIComponent(texto));
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    dibujarTabla('tablaClientes', respuesta.datos, [
+    return consultarTabla('tablaClientes', '/clientes?buscar=' + encodeURIComponent(texto), [
       { titulo: 'Cédula',   campo: 'cedula' },
       { titulo: 'Nombre',   campo: 'nombre' },
       { titulo: 'Apellido', campo: 'apellido' },
@@ -404,9 +356,7 @@ class VistaClientes {
 
 // ---------- Vista: Mascotas (Ian Carmona) ----------
 class VistaMascotas {
-  constructor() {
-    this.validador = new ValidadorMascota();
-  }
+  constructor() { this.validador = new ValidadorMascota(); }
 
   abrir() {
     ocultarFormulario('seccionFormMascotas');
@@ -415,54 +365,30 @@ class VistaMascotas {
   }
 
   async abrirFormulario() {
-    const respuesta = await conexion.enviar('GET', '/clientes?buscar=');
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-    if (respuesta.datos.length == 0) {
+    const clientes = await obtenerClientes();
+    if (!clientes) return;
+    if (clientes.length == 0) {
       alert('Primero debe registrar al dueño en Clientes');
       return;
     }
-
-    const opciones = [];
-    for (const cliente of respuesta.datos) {
-      opciones.push({ valor: cliente.id, texto: cliente.cedula + ' - ' + cliente.nombre + ' ' + cliente.apellido });
-    }
     mostrarFormulario('seccionFormMascotas', 'formMascotas');
-    llenarSelect('selectDuenoMascotas', opciones);
+    llenarSelect('selectDuenoMascotas', opcionesDeClientes(clientes));
   }
 
-  async guardar() {
-    const datos = leerFormulario('formMascotas');
-
-    const errores = this.validador.validar(datos);
-    if (mostrarErrores('formMascotas', errores) == false) {
-      return;
-    }
-
-    if (confirm('¿Desea guardar la mascota?') == false) {
-      return;
-    }
-
-    const respuesta = await conexion.enviar('POST', '/mascotas', datos);
-    alert(respuesta.mensaje);
-
-    if (respuesta.ok) {
-      ocultarFormulario('seccionFormMascotas');
-      this.consultar();
-    }
+  guardar() {
+    return guardarRegistro({
+      form: 'formMascotas',
+      seccion: 'seccionFormMascotas',
+      validador: this.validador,
+      pregunta: '¿Desea guardar la mascota?',
+      ruta: '/mascotas',
+      alGuardar: () => this.consultar()
+    });
   }
 
-  async consultar() {
+  consultar() {
     const texto = document.getElementById('buscarMascotas').value;
-    const respuesta = await conexion.enviar('GET', '/mascotas?buscar=' + encodeURIComponent(texto) + '&clienteId=');
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    dibujarTabla('tablaMascotas', respuesta.datos, [
+    return consultarTabla('tablaMascotas', '/mascotas?buscar=' + encodeURIComponent(texto) + '&clienteId=', [
       { titulo: 'Nombre',     campo: 'nombre' },
       { titulo: 'Especie',    campo: 'especie' },
       { titulo: 'Raza',       campo: 'raza' },
@@ -475,9 +401,7 @@ class VistaMascotas {
 
 // ---------- Vista: Empleados (Ángel Araujo) ----------
 class VistaEmpleados {
-  constructor() {
-    this.validador = new ValidadorEmpleado();
-  }
+  constructor() { this.validador = new ValidadorEmpleado(); }
 
   abrir() {
     ocultarFormulario('seccionFormEmpleados');
@@ -485,36 +409,20 @@ class VistaEmpleados {
     this.consultar();
   }
 
-  async guardar() {
-    const datos = leerFormulario('formEmpleados');
-
-    const errores = this.validador.validar(datos);
-    if (mostrarErrores('formEmpleados', errores) == false) {
-      return;
-    }
-
-    if (confirm('¿Desea guardar el empleado?') == false) {
-      return;
-    }
-
-    const respuesta = await conexion.enviar('POST', '/empleados', datos);
-    alert(respuesta.mensaje);
-
-    if (respuesta.ok) {
-      ocultarFormulario('seccionFormEmpleados');
-      this.consultar();
-    }
+  guardar() {
+    return guardarRegistro({
+      form: 'formEmpleados',
+      seccion: 'seccionFormEmpleados',
+      validador: this.validador,
+      pregunta: '¿Desea guardar el empleado?',
+      ruta: '/empleados',
+      alGuardar: () => this.consultar()
+    });
   }
 
-  async consultar() {
+  consultar() {
     const rol = document.getElementById('filtroRolEmpleados').value;
-    const respuesta = await conexion.enviar('GET', '/empleados?rol=' + encodeURIComponent(rol));
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    dibujarTabla('tablaEmpleados', respuesta.datos, [
+    return consultarTabla('tablaEmpleados', '/empleados?rol=' + encodeURIComponent(rol), [
       { titulo: 'Cédula',   campo: 'cedula' },
       { titulo: 'Nombre',   campo: 'nombre' },
       { titulo: 'Apellido', campo: 'apellido' },
@@ -527,9 +435,7 @@ class VistaEmpleados {
 
 // ---------- Vista: Citas (Mouriss ElJawich) ----------
 class VistaCitas {
-  constructor() {
-    this.validador = new ValidadorCita();
-  }
+  constructor() { this.validador = new ValidadorCita(); }
 
   abrir() {
     ocultarFormulario('seccionFormCitas');
@@ -539,80 +445,40 @@ class VistaCitas {
   }
 
   async abrirFormulario() {
-    const clientes = await conexion.enviar('GET', '/clientes?buscar=');
+    const clientes = await obtenerClientes();
     const veterinarios = await conexion.enviar('GET', '/empleados?rol=veterinario');
-    if (!clientes.ok || !veterinarios.ok) {
-      alert(clientes.mensaje || veterinarios.mensaje);
+    if (!clientes || !veterinarios.ok) {
+      if (!veterinarios.ok) alert(veterinarios.mensaje);
       return;
-    }
-
-    const opcionesClientes = [];
-    for (const cliente of clientes.datos) {
-      opcionesClientes.push({ valor: cliente.id, texto: cliente.cedula + ' - ' + cliente.nombre + ' ' + cliente.apellido });
-    }
-
-    const opcionesVeterinarios = [];
-    for (const veterinario of veterinarios.datos) {
-      opcionesVeterinarios.push({ valor: veterinario.id, texto: veterinario.nombre + ' ' + veterinario.apellido });
     }
 
     mostrarFormulario('seccionFormCitas', 'formCitas');
-    llenarSelect('selectClienteCitas', opcionesClientes);
-    llenarSelect('selectVeterinarioCitas', opcionesVeterinarios);
+    llenarSelect('selectClienteCitas', opcionesDeClientes(clientes));
+    llenarSelect('selectVeterinarioCitas', veterinarios.datos.map((v) => ({ valor: v.id, texto: v.nombre + ' ' + v.apellido })));
     llenarSelect('selectMascotaCitas', []);
   }
 
-  async cargarMascotasDelCliente() {
-    const clienteId = document.getElementById('selectClienteCitas').value;
-    if (clienteId == '') {
-      llenarSelect('selectMascotaCitas', []);
-      return;
-    }
-
-    const respuesta = await conexion.enviar('GET', '/mascotas?buscar=&clienteId=' + encodeURIComponent(clienteId));
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    const opciones = [];
-    for (const mascota of respuesta.datos) {
-      opciones.push({ valor: mascota.id, texto: mascota.nombre + ' (' + mascota.especie + ')' });
-    }
-    llenarSelect('selectMascotaCitas', opciones);
+  cargarMascotasDelCliente() {
+    return cargarSelectMascotas('selectMascotaCitas', document.getElementById('selectClienteCitas').value);
   }
 
-  async guardar() {
-    const datos = leerFormulario('formCitas');
-
-    const errores = this.validador.validar(datos);
-    if (mostrarErrores('formCitas', errores) == false) {
-      return;
-    }
-
-    if (confirm('¿Desea guardar la cita?') == false) {
-      return;
-    }
-
-    const respuesta = await conexion.enviar('POST', '/citas', datos);
-    alert(respuesta.mensaje);
-
-    if (respuesta.ok) {
-      ocultarFormulario('seccionFormCitas');
-      document.getElementById('fechaConsultaCitas').value = datos.fecha;
-      this.consultar();
-    }
+  guardar() {
+    return guardarRegistro({
+      form: 'formCitas',
+      seccion: 'seccionFormCitas',
+      validador: this.validador,
+      pregunta: '¿Desea guardar la cita?',
+      ruta: '/citas',
+      alGuardar: (datos) => {
+        document.getElementById('fechaConsultaCitas').value = datos.fecha;
+        return this.consultar();
+      }
+    });
   }
 
-  async consultar() {
+  consultar() {
     const fecha = document.getElementById('fechaConsultaCitas').value;
-    const respuesta = await conexion.enviar('GET', '/citas?fecha=' + encodeURIComponent(fecha));
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    dibujarTabla('tablaCitas', respuesta.datos, [
+    return consultarTabla('tablaCitas', '/citas?fecha=' + encodeURIComponent(fecha), [
       { titulo: 'Hora',        campo: 'hora' },
       { titulo: 'Mascota',     campo: 'mascota' },
       { titulo: 'Veterinario', campo: 'veterinario' },
@@ -635,90 +501,47 @@ class VistaNotificaciones {
   }
 
   async abrirFormulario() {
-    const respuesta = await conexion.enviar('GET', '/clientes?buscar=');
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
+    const clientes = await obtenerClientes();
+    if (!clientes) return;
+    this.listaClientes = clientes;
 
-    this.listaClientes = respuesta.datos;
-    if (this.listaClientes.length == 0) {
+    if (clientes.length == 0) {
       alert('No existe cliente ni mascota registrada');
       return;
     }
 
-    const opciones = [];
-    for (const cliente of this.listaClientes) {
-      opciones.push({ valor: cliente.id, texto: cliente.cedula + ' - ' + cliente.nombre + ' ' + cliente.apellido });
-    }
     mostrarFormulario('seccionFormNotificaciones', 'formNotificaciones');
-    llenarSelect('selectClienteNotificaciones', opciones);
+    llenarSelect('selectClienteNotificaciones', opcionesDeClientes(clientes));
     llenarSelect('selectMascotaNotificaciones', []);
   }
 
-  async alElegirCliente() {
+  alElegirCliente() {
     const clienteId = document.getElementById('selectClienteNotificaciones').value;
-    if (clienteId == '') {
-      llenarSelect('selectMascotaNotificaciones', []);
-      return;
-    }
+    const elegido = this.listaClientes.find((c) => c.id == clienteId);
 
-    let clienteElegido = null;
-    for (const cliente of this.listaClientes) {
-      if (cliente.id == clienteId) {
-        clienteElegido = cliente;
-      }
-    }
-
-    if (clienteElegido != null && !clienteElegido.telegram) {
+    if (elegido && !elegido.telegram) {
       alert('El cliente no posee cuenta de telegram');
       document.getElementById('selectClienteNotificaciones').value = '';
       llenarSelect('selectMascotaNotificaciones', []);
       return;
     }
 
-    const respuesta = await conexion.enviar('GET', '/mascotas?buscar=&clienteId=' + encodeURIComponent(clienteId));
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    const opciones = [];
-    for (const mascota of respuesta.datos) {
-      opciones.push({ valor: mascota.id, texto: mascota.nombre + ' (' + mascota.especie + ')' });
-    }
-    llenarSelect('selectMascotaNotificaciones', opciones);
+    return cargarSelectMascotas('selectMascotaNotificaciones', clienteId);
   }
 
-  async guardar() {
-    const datos = leerFormulario('formNotificaciones');
-
-    const errores = this.validador.validar(datos);
-    if (mostrarErrores('formNotificaciones', errores) == false) {
-      return;
-    }
-
-    if (confirm('¿Desea crear la notificación?') == false) {
-      return;
-    }
-
-    const respuesta = await conexion.enviar('POST', '/notificaciones', datos);
-    alert(respuesta.mensaje);
-
-    if (respuesta.ok) {
-      ocultarFormulario('seccionFormNotificaciones');
-      this.consultar();
-    }
+  guardar() {
+    return guardarRegistro({
+      form: 'formNotificaciones',
+      seccion: 'seccionFormNotificaciones',
+      validador: this.validador,
+      pregunta: '¿Desea crear la notificación?',
+      ruta: '/notificaciones',
+      alGuardar: () => this.consultar()
+    });
   }
 
-  async consultar() {
-    const respuesta = await conexion.enviar('GET', '/notificaciones');
-    if (!respuesta.ok) {
-      alert(respuesta.mensaje);
-      return;
-    }
-
-    dibujarTabla('tablaNotificaciones', respuesta.datos, [
+  consultar() {
+    return consultarTabla('tablaNotificaciones', '/notificaciones', [
       { titulo: 'Fecha',    campo: 'fecha' },
       { titulo: 'Hora',     campo: 'hora' },
       { titulo: 'Servicio', campo: 'servicio' },
@@ -753,10 +576,8 @@ function navegar(pantalla) {
   const destino = PANTALLAS[pantalla] ? pantalla : 'login';
   const config = PANTALLAS[destino];
 
-  // Si la pantalla requiere sesión o un rol específico, valida el permiso
   if (config.roles != null) {
-    const rol = leerSesion().rol;
-    if (!config.roles.includes(rol)) {
+    if (!config.roles.includes(leerSesion().rol)) {
       navegar('login');
       return;
     }
@@ -765,9 +586,7 @@ function navegar(pantalla) {
     ocultarEncabezado();
   }
 
-  // Oculta todas las vistas y muestra solo la activa
-  const vistas = document.querySelectorAll('.vista');
-  for (const vista of vistas) {
+  for (const vista of document.querySelectorAll('.vista')) {
     vista.hidden = true;
   }
   document.getElementById('vista-' + destino).hidden = false;
@@ -780,8 +599,7 @@ function navegar(pantalla) {
   config.vista.abrir();
 }
 
-// Al cargar la página: si ya hay sesión, abre la vista del hash o el menú; si no, abre el login
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', () => {
   const inicial = location.hash.replace('#', '');
   if (leerSesion().rol && PANTALLAS[inicial] && inicial != 'login') {
     navegar(inicial);
