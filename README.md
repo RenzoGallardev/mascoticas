@@ -15,7 +15,7 @@ Los datos se guardan en una base de datos en línea (Upstash Redis, conectada de
 public/                ← VISTA (V): interfaz unificada en 2 archivos (Vercel exige el nombre "public").
   mascoticas.html      todas las pantallas (Login, Menú, Clientes, Mascotas, Empleados, Citas, Notificaciones)
   mascoticas.js        ConexionBack, sesión/ayudantes, los 5 Validador*, las 7 Vista* y navegar()
-  comun/estilos.css    estilos compartidos (Paleta Mascoticas)
+  styles.css           estilos compartidos (Paleta Mascoticas)
   imagenes/logo.jpg    logo
 
 server.js              ← ENRUTADOR: punto de entrada Express (Vercel exige el nombre "server.js").
