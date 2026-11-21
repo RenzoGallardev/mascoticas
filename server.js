@@ -64,6 +64,14 @@ app.get('/api/citas', (req, res) => controlCitas.consultarDelDia(req, res));
 app.post('/api/notificaciones', (req, res) => controlNotificaciones.crear(req, res));
 app.get('/api/notificaciones', (req, res) => controlNotificaciones.consultar(req, res));
 
+// ---------- Rutas de pantallas anteriores (ej. /inicio/login.html) ----------
+app.use(function (req, res, next) {
+  if (req.method === 'GET' && !req.path.startsWith('/api/') && req.path !== '/mascoticas.html') {
+    return res.redirect('/mascoticas.html');
+  }
+  next();
+});
+
 // ---------- Manejo global de errores (ej. fallo de conexión con Redis) ----------
 app.use(function (error, req, res, next) {
   console.log(error);
