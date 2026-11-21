@@ -1,15 +1,15 @@
 /**
- * RESUMEN: Guarda y lee la información en Redis (la base de datos). Es el ÚNICO que toca la BD; lo usan los Control.
+ * RESUMEN: Guarda y lee la información en Redis (la base de datos). Es el ÚNICO que toca la BD; lo usan solo los Modelos.
  *
- * ARCHIVO: back/persistencia/ArchivoJson.js
- * CAPA:    persistencia (acceso a la base de datos)
+ * ARCHIVO:  back/persistencia/ArchivoJson.js
+ * CAPA MVC: Modelo (acceso a datos / persistencia)
  *
- * QUÉ ES:  La ÚNICA clase que lee y guarda datos en la base de datos.
- *          La base de datos es Upstash Redis (en línea, conectada desde Vercel).
- *          Cada "tabla" es una LISTA guardada con un nombre.
- *          Ejemplo: 'clientes'  →  [ {id: 1, cedula: "123", ...}, ... ]
- * NOMBRE:  se llama ArchivoJson porque al principio guardaba en archivos .json; hoy guarda en Redis.
- * LA USAN: todas las clases de back/control/
+ * QUÉ ES:   La ÚNICA clase que lee y guarda datos en la base de datos.
+ *           La base de datos es Upstash Redis (en línea, conectada desde Vercel).
+ *           Cada "tabla" es una LISTA guardada con un nombre.
+ *           Ejemplo: 'clientes'  →  [ {id: 1, cedula: "123", ...}, ... ]
+ * NOMBRE:   se llama ArchivoJson porque al principio guardaba en archivos .json; hoy guarda en Redis.
+ * LA USAN:  únicamente las clases del Modelo en back/modelo/ (los Controladores nunca tocan la BD directo).
  *
  * async / await: hablar con la base de datos tarda un poquito; "await" espera la respuesta.
  */
@@ -37,7 +37,7 @@ class ArchivoJson {
   async leerTodos() {
     const lista = await redis.get(this.nombre);
     if (lista == null) {
-      return DATOS_INICIALES[this.nombre]; // todavía no se ha guardado nada
+      return [...DATOS_INICIALES[this.nombre]]; // todavía no se ha guardado nada
     }
     return lista;
   }

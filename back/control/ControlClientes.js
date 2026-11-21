@@ -1,58 +1,34 @@
 /**
- * RESUMEN: El cerebro de Clientes: revisa que la cédula no se repita y le pide a ArchivoJson que guarde. Lo llama server.js.
+ * RESUMEN: Controlador de Clientes. Recibe las peticiones HTTP de la Vista, valida permisos, llama al Modelo Cliente y responde JSON.
  *
- * ARCHIVO: back/control/ControlClientes.js
- * CAPA:    control (lógica y reglas de negocio)
+ * ARCHIVO:  back/control/ControlClientes.js
+ * CAPA MVC: Controlador (coordina peticiones entre la Vista y el Modelo)
  * HISTORIAS: Crear cliente/dueño y Consultar cliente
- * AUTOR:   Renzo Gallardo
+ * AUTOR:    Renzo Gallardo
  *
- * LO LLAMA: server.js
- * LLAMA A:  modelo/Cliente.js y persistencia/ArchivoJson.js
- *
- * Todos los métodos devuelven: { ok: true o false, mensaje: '...', datos: ... }
+ * LO LLAMA: server.js (enrutador)
+ * LLAMA A:  back/modelo/Cliente.js
  */
 
-const ArchivoJson = require('../persistencia/ArchivoJson');
 const Cliente = require('../modelo/Cliente');
+
+const SOLO_SECRETARIA = { ok: false, mensaje: 'Acceso permitido solo a usuarios con rol de secretaria' };
 
 class ControlClientes {
 
-  constructor() {
-    this.archivo = new ArchivoJson('clientes'); // lista "clientes" en la base de datos Redis
+  // POST /api/clientes — HU Crear cliente/dueño
+  async crear(req, res) {
+    if (req.headers.rol != 'secretaria') {
+      return res.json(SOLO_SECRETARIA);
+    }
+    const respuesta = await Cliente.crear(req.body);
+    res.json(respuesta);
   }
 
-  // HU Crear cliente: valida → verifica que no exista → guarda
-  async crear(datos) {
-    // 1. Valida que estén los datos obligatorios
-    if (datos.cedula == '' || datos.nombre == '' || datos.apellido == '' || datos.telefono == '') {
-      return { ok: false, mensaje: 'Datos inválidos: cédula, nombre, apellido y teléfono son obligatorios' };
-    }
-
-    // 2. Verifica que no exista otro cliente con la misma cédula
-    const clientes = await this.archivo.leerTodos();
-    for (const cliente of clientes) {
-      if (cliente.cedula == datos.cedula) {
-        return { ok: false, mensaje: 'El cliente ya está registrado' };
-      }
-    }
-
-    // 3. Crea el cliente y lo guarda
-    const nuevoCliente = new Cliente(datos);
-    await this.archivo.agregar(nuevoCliente);
-    return { ok: true, mensaje: 'Cliente registrado con éxito' };
-  }
-
-  // HU Consultar cliente: devuelve los clientes cuya cédula o nombre contengan el texto buscado
-  async consultar(textoBuscado) {
-    const clientes = await this.archivo.leerTodos();
-    const encontrados = [];
-    for (const cliente of clientes) {
-      const texto = cliente.cedula + ' ' + cliente.nombre + ' ' + cliente.apellido;
-      if (texto.toLowerCase().includes(textoBuscado.toLowerCase())) {
-        encontrados.push(cliente);
-      }
-    }
-    return { ok: true, datos: encontrados };
+  // GET /api/clientes?buscar=... — HU Consultar cliente
+  async consultar(req, res) {
+    const respuesta = await Cliente.consultar(req.query.buscar);
+    res.json(respuesta);
   }
 }
 
