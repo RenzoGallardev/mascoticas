@@ -7,11 +7,12 @@
  *
  * RECORRIDO DE "CREAR NOTIFICACIÓN":
  *   1. Interfaz ............ notificaciones.html
- *   2. Valida campos ....... ValidadorNotificacion.validar()
- *   3. Front → back ........ conexion.enviar('POST', '/notificaciones')
- *   4. Recibe en el back ... app.post('/api/notificaciones')   (server.js)    
- *   5. Lógica .............. ControlNotificaciones.crear()     (el cliente debe tener Telegram)
- *   6. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "notificaciones" (estado "Pendiente")
+ *   2. Botón OK ............ PantallaNotificaciones.guardarNotificacion()   (este archivo)
+ *   3. Valida campos ....... ValidadorNotificacion.validar()
+ *   4. Front → back ........ conexion.enviar('POST', '/notificaciones')
+ *   5. Recibe en el back ... app.post('/api/notificaciones')   (server.js)    
+ *   6. Lógica .............. ControlNotificaciones.crear()     (el cliente debe tener Telegram)
+ *   7. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "notificaciones" (estado "Pendiente")
  */
 
 class ValidadorNotificacion {
@@ -37,95 +38,103 @@ class ValidadorNotificacion {
 }
 
 
-// ---------- Al abrir la pantalla ----------
-exigirSesion(['secretaria']);
-dibujarEncabezado();
-consultarNotificaciones();
+// Clase de la pantalla: tiene los métodos que llaman los botones de notificaciones.html
+class PantallaNotificaciones {
 
-let listaClientes = []; // se guardan aquí para revisar si tienen Telegram
-
-
-// Abre el formulario. Si no hay clientes registrados, avisa (como dice el diagrama)
-async function abrirFormularioNotificacion() {
-  const respuesta = await conexion.enviar('GET', '/clientes?buscar=');
-  listaClientes = respuesta.datos;
-
-  if (listaClientes.length == 0) {
-    alert('No existe cliente ni mascota registrada');
-    return;
+  constructor() {
+    this.listaClientes = []; // se guardan aquí para revisar si tienen Telegram
   }
 
-  const opciones = [];
-  for (const cliente of listaClientes) {
-    opciones.push({ valor: cliente.id, texto: cliente.cedula + ' - ' + cliente.nombre + ' ' + cliente.apellido });
+
+  // Abre el formulario. Si no hay clientes registrados, avisa (como dice el diagrama)
+  async abrirFormularioNotificacion() {
+    const respuesta = await conexion.enviar('GET', '/clientes?buscar=');
+    this.listaClientes = respuesta.datos;
+
+    if (this.listaClientes.length == 0) {
+      alert('No existe cliente ni mascota registrada');
+      return;
+    }
+
+    const opciones = [];
+    for (const cliente of this.listaClientes) {
+      opciones.push({ valor: cliente.id, texto: cliente.cedula + ' - ' + cliente.nombre + ' ' + cliente.apellido });
+    }
+    ayudante.mostrarFormulario('seccionFormulario', 'formulario');
+    ayudante.llenarSelect('selectCliente', opciones);
+    ayudante.llenarSelect('selectMascota', []);
   }
-  mostrarFormulario('seccionFormulario', 'formulario');
-  llenarSelect('selectCliente', opciones);
-  llenarSelect('selectMascota', []);
-}
 
 
-// Al elegir un cliente: revisa que tenga Telegram y carga sus mascotas
-async function alElegirCliente() {
-  const clienteId = document.getElementById('selectCliente').value;
+  // Al elegir un cliente: revisa que tenga Telegram y carga sus mascotas
+  async alElegirCliente() {
+    const clienteId = document.getElementById('selectCliente').value;
 
-  // Busca el cliente elegido en la lista
-  let clienteElegido = null;
-  for (const cliente of listaClientes) {
-    if (cliente.id == clienteId) {
-      clienteElegido = cliente;
+    // Busca el cliente elegido en la lista
+    let clienteElegido = null;
+    for (const cliente of this.listaClientes) {
+      if (cliente.id == clienteId) {
+        clienteElegido = cliente;
+      }
+    }
+
+    // Regla: el cliente debe tener cuenta de Telegram
+    if (clienteElegido != null && clienteElegido.telegram == '') {
+      alert('El cliente no posee cuenta de telegram');
+      document.getElementById('selectCliente').value = '';
+      ayudante.llenarSelect('selectMascota', []);
+      return;
+    }
+
+    const respuesta = await conexion.enviar('GET', '/mascotas?buscar=&clienteId=' + clienteId);
+    const opciones = [];
+    for (const mascota of respuesta.datos) {
+      opciones.push({ valor: mascota.id, texto: mascota.nombre + ' (' + mascota.especie + ')' });
+    }
+    ayudante.llenarSelect('selectMascota', opciones);
+  }
+
+
+  // HU Crear notificación: se ejecuta al presionar OK
+  async guardarNotificacion() {
+    const datos = ayudante.leerFormulario('formulario');
+
+    const errores = new ValidadorNotificacion().validar(datos);
+    if (ayudante.mostrarErrores('formulario', errores) == false) {
+      return;
+    }
+
+    if (confirm('¿Desea crear la notificación?') == false) {
+      return;
+    }
+
+    const respuesta = await conexion.enviar('POST', '/notificaciones', datos);
+    alert(respuesta.mensaje); // "Notificación creada exitosamente" o el error
+
+    if (respuesta.ok) {
+      ayudante.ocultarFormulario('seccionFormulario');
+      this.consultarNotificaciones();
     }
   }
 
-  // Regla: el cliente debe tener cuenta de Telegram
-  if (clienteElegido != null && clienteElegido.telegram == '') {
-    alert('El cliente no posee cuenta de telegram');
-    document.getElementById('selectCliente').value = '';
-    llenarSelect('selectMascota', []);
-    return;
-  }
 
-  const respuesta = await conexion.enviar('GET', '/mascotas?buscar=&clienteId=' + clienteId);
-  const opciones = [];
-  for (const mascota of respuesta.datos) {
-    opciones.push({ valor: mascota.id, texto: mascota.nombre + ' (' + mascota.especie + ')' });
-  }
-  llenarSelect('selectMascota', opciones);
-}
+  // HU Consultar notificación
+  async consultarNotificaciones() {
+    const respuesta = await conexion.enviar('GET', '/notificaciones');
 
-
-// HU Crear notificación: se ejecuta al presionar OK
-async function guardarNotificacion() {
-  const datos = leerFormulario('formulario');
-
-  const errores = new ValidadorNotificacion().validar(datos);
-  if (mostrarErrores('formulario', errores) == false) {
-    return;
-  }
-
-  if (confirm('¿Desea crear la notificación?') == false) {
-    return;
-  }
-
-  const respuesta = await conexion.enviar('POST', '/notificaciones', datos);
-  alert(respuesta.mensaje); // "Notificación creada exitosamente" o el error
-
-  if (respuesta.ok) {
-    ocultarFormulario('seccionFormulario');
-    consultarNotificaciones();
+    ayudante.dibujarTabla('tabla', respuesta.datos, [
+      { titulo: 'Fecha',    campo: 'fecha' },
+      { titulo: 'Hora',     campo: 'hora' },
+      { titulo: 'Servicio', campo: 'servicio' },
+      { titulo: 'Mensaje',  campo: 'mensaje' },
+      { titulo: 'Estado',   campo: 'estado' }
+    ]);
   }
 }
 
 
-// HU Consultar notificación
-async function consultarNotificaciones() {
-  const respuesta = await conexion.enviar('GET', '/notificaciones');
-
-  dibujarTabla('tabla', respuesta.datos, [
-    { titulo: 'Fecha',    campo: 'fecha' },
-    { titulo: 'Hora',     campo: 'hora' },
-    { titulo: 'Servicio', campo: 'servicio' },
-    { titulo: 'Mensaje',  campo: 'mensaje' },
-    { titulo: 'Estado',   campo: 'estado' }
-  ]);
-}
+// ---------- Al abrir la pantalla ----------
+const pantalla = new PantallaNotificaciones(); // el objeto que usan los botones de notificaciones.html
+sesion.exigirSesion(['secretaria']);
+ayudante.dibujarEncabezado();
+pantalla.consultarNotificaciones();

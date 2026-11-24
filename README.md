@@ -40,16 +40,21 @@ Todas las historias siguen **el mismo camino**. Ejemplo con *Crear cliente*:
 | # | Pregunta de la profe | Respuesta | Archivo |
 |---|---|---|---|
 | 1 | ¿Dónde está la interfaz? | Formulario "Registrar cliente" | `public/clientes/clientes.html` |
-| 2 | ¿Qué método valida los campos? | `ValidadorCliente.validar()` | `public/clientes/clientes.js` |
-| 3 | ¿Qué método comunica el front con el back? | `conexion.enviar('POST', '/clientes')` | `public/comun/comun.js` |
-| 4 | ¿Quién recibe en el back? | `app.post('/api/clientes')` | `server.js` |
-| 5 | ¿Y qué hace después? | `ControlClientes.crear()`: revisa que la cédula no exista | `back/control/ControlClientes.js` |
-| 6 | ¿Quién guarda? | `ArchivoJson.agregar()` | `back/persistencia/ArchivoJson.js` |
-| 7 | ¿Dónde queda? | En la base de datos en línea (Upstash Redis), en la lista "clientes" | |
+| 2 | ¿Qué método se ejecuta al presionar OK? | `PantallaClientes.guardarCliente()` (el botón llama a `pantalla.guardarCliente()`) | `public/clientes/clientes.js` |
+| 3 | ¿Qué método valida los campos? | `ValidadorCliente.validar()` | `public/clientes/clientes.js` |
+| 4 | ¿Qué método comunica el front con el back? | `conexion.enviar('POST', '/clientes')` | `public/comun/comun.js` |
+| 5 | ¿Quién recibe en el back? | `app.post('/api/clientes')` | `server.js` |
+| 6 | ¿Y qué hace después? | `ControlClientes.crear()`: revisa que la cédula no exista | `back/control/ControlClientes.js` |
+| 7 | ¿Quién guarda? | `ArchivoJson.agregar()` | `back/persistencia/ArchivoJson.js` |
+| 8 | ¿Dónde queda? | En la base de datos en línea (Upstash Redis), en la lista "clientes" | |
 
 Para las demás historias, cambia "clientes" por "mascotas", "empleados", "citas" o "notificaciones".
 
 ### Preguntas típicas
+- **¿El front es orientado a objetos?** Sí. Cada archivo `.js` tiene sus clases y de cada clase se crea **un objeto**:
+  - `comun.js`: `ConexionBack` → `conexion`, `Sesion` → `sesion`, `Ayudante` → `ayudante`.
+  - Cada pantalla: `Validador...` (revisa el formulario) y `Pantalla...` → `pantalla` (los métodos que llaman los botones).
+  - Ejemplo: el botón OK de clientes hace `onclick="pantalla.guardarCliente()"`.
 - **¿Por qué validan en el front y también en el back?** En el front se revisa el formato (campos vacíos, números) para no mandar datos malos al back. En el back se revisan las reglas que necesitan los datos guardados (cédula repetida, cruce de horarios) y el rol (solo la secretaria crea).
 - **¿Quién habla con la base de datos?** Solo `ArchivoJson` (carpeta `back/persistencia`).
 - **¿Cómo sabe el back quién está usando el sistema?** Al iniciar sesión se guarda el rol en el navegador, y `conexion.enviar` lo manda en cada petición. El back revisa que sea `secretaria` antes de crear.

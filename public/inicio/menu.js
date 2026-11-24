@@ -6,15 +6,26 @@
  *           (Matriz de impacto: Clientes y Notificaciones son solo de la secretaria)
  */
 
-exigirSesion(['secretaria', 'veterinario']);
-dibujarEncabezado();
+// Clase de la pantalla del menú principal
+class PantallaMenu {
 
-const sesion = leerSesion();
-document.getElementById('bienvenida').textContent = 'Bienvenido(a), ' + sesion.nombre;
+  // Saluda y esconde los botones que el rol no puede usar
+  mostrarMenu() {
+    const usuario = sesion.leerSesion();
+    document.getElementById('bienvenida').textContent = 'Bienvenido(a), ' + usuario.nombre;
 
-if (sesion.rol != 'secretaria') {
-  const botones = document.querySelectorAll('.solo-secretaria'); // busca los botones marcados
-  for (const boton of botones) {
-    boton.hidden = true;
+    if (usuario.rol != 'secretaria') {
+      const botones = document.querySelectorAll('.solo-secretaria'); // busca los botones marcados
+      for (const boton of botones) {
+        boton.hidden = true;
+      }
+    }
   }
 }
+
+
+// ---------- Al abrir la pantalla ----------
+const pantalla = new PantallaMenu(); // el objeto de menu.html
+sesion.exigirSesion(['secretaria', 'veterinario']);
+ayudante.dibujarEncabezado();
+pantalla.mostrarMenu();

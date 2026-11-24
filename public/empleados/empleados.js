@@ -7,11 +7,12 @@
  *
  * RECORRIDO DE "CREAR EMPLEADO":
  *   1. Interfaz ............ empleados.html
- *   2. Valida campos ....... ValidadorEmpleado.validar()
- *   3. Front → back ........ conexion.enviar('POST', '/empleados')
- *   4. Recibe en el back ... app.post('/api/empleados')     (server.js)    
- *   5. Lógica .............. ControlEmpleados.crear()       (revisa que no esté registrado)
- *   6. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "empleados"
+ *   2. Botón OK ............ PantallaEmpleados.guardarEmpleado()   (este archivo)
+ *   3. Valida campos ....... ValidadorEmpleado.validar()
+ *   4. Front → back ........ conexion.enviar('POST', '/empleados')
+ *   5. Recibe en el back ... app.post('/api/empleados')     (server.js)    
+ *   6. Lógica .............. ControlEmpleados.crear()       (revisa que no esté registrado)
+ *   7. Guarda .............. ArchivoJson.agregar()  →  base de datos Redis, lista "empleados"
  */
 
 class ValidadorEmpleado {
@@ -42,51 +43,56 @@ class ValidadorEmpleado {
 }
 
 
+// Clase de la pantalla: tiene los métodos que llaman los botones de empleados.html
+class PantallaEmpleados {
+
+  // HU Crear empleado: se ejecuta al presionar OK
+  async guardarEmpleado() {
+    const datos = ayudante.leerFormulario('formulario');
+
+    const errores = new ValidadorEmpleado().validar(datos);
+    if (ayudante.mostrarErrores('formulario', errores) == false) {
+      return;
+    }
+
+    if (confirm('¿Desea guardar el empleado?') == false) {
+      return;
+    }
+
+    const respuesta = await conexion.enviar('POST', '/empleados', datos);
+    alert(respuesta.mensaje);
+
+    if (respuesta.ok) {
+      ayudante.ocultarFormulario('seccionFormulario');
+      this.consultarEmpleados();
+    }
+  }
+
+
+  // HU Consultar empleado (se puede filtrar por rol)
+  async consultarEmpleados() {
+    const rol = document.getElementById('filtroRol').value;
+    const respuesta = await conexion.enviar('GET', '/empleados?rol=' + rol);
+
+    ayudante.dibujarTabla('tabla', respuesta.datos, [
+      { titulo: 'Cédula',   campo: 'cedula' },
+      { titulo: 'Nombre',   campo: 'nombre' },
+      { titulo: 'Apellido', campo: 'apellido' },
+      { titulo: 'Rol',      campo: 'rol' },
+      { titulo: 'Usuario',  campo: 'usuario' },
+      { titulo: 'Teléfono', campo: 'telefono' }
+    ]);
+  }
+}
+
+
 // ---------- Al abrir la pantalla ----------
-exigirSesion(['secretaria', 'veterinario']);
-dibujarEncabezado();
-consultarEmpleados();
+const pantalla = new PantallaEmpleados(); // el objeto que usan los botones de empleados.html
+sesion.exigirSesion(['secretaria', 'veterinario']);
+ayudante.dibujarEncabezado();
+pantalla.consultarEmpleados();
 
 // Regla: crear empleado es exclusivo de la secretaria → al veterinario se le esconde el botón
-if (leerSesion().rol != 'secretaria') {
+if (sesion.leerSesion().rol != 'secretaria') {
   document.getElementById('botonNuevo').hidden = true;
-}
-
-
-// HU Crear empleado: se ejecuta al presionar OK
-async function guardarEmpleado() {
-  const datos = leerFormulario('formulario');
-
-  const errores = new ValidadorEmpleado().validar(datos);
-  if (mostrarErrores('formulario', errores) == false) {
-    return;
-  }
-
-  if (confirm('¿Desea guardar el empleado?') == false) {
-    return;
-  }
-
-  const respuesta = await conexion.enviar('POST', '/empleados', datos);
-  alert(respuesta.mensaje);
-
-  if (respuesta.ok) {
-    ocultarFormulario('seccionFormulario');
-    consultarEmpleados();
-  }
-}
-
-
-// HU Consultar empleado (se puede filtrar por rol)
-async function consultarEmpleados() {
-  const rol = document.getElementById('filtroRol').value;
-  const respuesta = await conexion.enviar('GET', '/empleados?rol=' + rol);
-
-  dibujarTabla('tabla', respuesta.datos, [
-    { titulo: 'Cédula',   campo: 'cedula' },
-    { titulo: 'Nombre',   campo: 'nombre' },
-    { titulo: 'Apellido', campo: 'apellido' },
-    { titulo: 'Rol',      campo: 'rol' },
-    { titulo: 'Usuario',  campo: 'usuario' },
-    { titulo: 'Teléfono', campo: 'telefono' }
-  ]);
 }

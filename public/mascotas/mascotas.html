@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  RESUMEN: Lo que se ve: el formulario y la tabla de mascotas. Sus botones llaman a funciones de mascotas.js.
+  RESUMEN: Lo que se ve: el formulario y la tabla de mascotas. Sus botones llaman a métodos del objeto "pantalla" (PantallaMascotas, en mascotas.js).
 
   ARCHIVO: public/mascotas/mascotas.html
   QUÉ ES:  Interfaz "Gestión de Mascotas"
@@ -25,7 +25,7 @@
       <h2>Registrar mascota</h2>
       <form id="formulario">
         <!-- Buscador: al escribir, la lista de dueños muestra solo los que coinciden (filtrarLista en comun.js) -->
-        <label>Buscar dueño <input id="buscarDueno" placeholder="Escriba cédula o nombre" oninput="filtrarLista('buscarDueno', 'selectDueno')"></label>
+        <label>Buscar dueño <input id="buscarDueno" placeholder="Escriba cédula o nombre" oninput="ayudante.filtrarLista('buscarDueno', 'selectDueno')"></label>
         <label>Dueño *   <select name="clienteId" id="selectDueno"></select></label>
         <label>Nombre *  <input name="nombre"></label>
         <label>Especie * <input name="especie" placeholder="Perro, gato..."></label>
@@ -39,8 +39,8 @@
         </label>
         <label>Fecha de nacimiento <input name="fechaNacimiento" type="date"></label>
         <div class="botones">
-          <button type="button" class="principal" onclick="guardarMascota()">OK</button>
-          <button type="button" onclick="salir()">Salir</button>
+          <button type="button" class="principal" onclick="pantalla.guardarMascota()">OK</button>
+          <button type="button" onclick="ayudante.salir()">Salir</button>
         </div>
       </form>
     </section>
@@ -49,8 +49,8 @@
     <section>
       <div class="barra">
         <input id="textoBuscar" placeholder="Buscar por nombre o especie">
-        <button onclick="consultarMascotas()">Buscar</button>
-        <button class="principal" id="botonNuevo" onclick="abrirFormularioMascota()">+ Registrar mascota</button>
+        <button onclick="pantalla.consultarMascotas()">Buscar</button>
+        <button class="principal" id="botonNuevo" onclick="pantalla.abrirFormularioMascota()">+ Registrar mascota</button>
       </div>
       <table id="tabla"></table>
     </section>

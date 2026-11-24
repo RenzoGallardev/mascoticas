@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!--
-  RESUMEN: Lo que se ve: el formulario y la tabla de clientes. Sus botones llaman a funciones de clientes.js.
+  RESUMEN: Lo que se ve: el formulario y la tabla de clientes. Sus botones llaman a métodos del objeto "pantalla" (PantallaClientes, en clientes.js).
 
   ARCHIVO: public/clientes/clientes.html
   QUÉ ES:  Interfaz "Gestión de Clientes"
            - Formulario "Registrar cliente" (HU Crear cliente/dueño). Oculto hasta presionar "+ Crear cliente".
            - Buscador y tabla (HU Consultar cliente).
   AUTOR:   Renzo Gallardo
-  SU CÓDIGO: clientes.js  (cada botón llama a una función de ese archivo con "onclick")
+  SU CÓDIGO: clientes.js  (cada botón llama a un método del objeto "pantalla" con "onclick")
 -->
 <html lang="es">
 <head>
@@ -32,8 +32,8 @@
         <label>Usuario de Telegram <input name="telegram" placeholder="@usuario"></label>
         <label>Dirección           <input name="direccion"></label>
         <div class="botones">
-          <button type="button" class="principal" onclick="guardarCliente()">OK</button>
-          <button type="button" onclick="salir()">Salir</button>
+          <button type="button" class="principal" onclick="pantalla.guardarCliente()">OK</button>
+          <button type="button" onclick="ayudante.salir()">Salir</button>
         </div>
       </form>
     </section>
@@ -42,8 +42,8 @@
     <section>
       <div class="barra">
         <input id="textoBuscar" placeholder="Buscar por cédula, nombre o apellido">
-        <button onclick="consultarClientes()">Buscar</button>
-        <button class="principal" onclick="mostrarFormulario('seccionFormulario', 'formulario')">+ Crear cliente</button>
+        <button onclick="pantalla.consultarClientes()">Buscar</button>
+        <button class="principal" onclick="ayudante.mostrarFormulario('seccionFormulario', 'formulario')">+ Crear cliente</button>
       </div>
       <table id="tabla"></table>
     </section>
