@@ -1,14 +1,18 @@
 /**
- * RESUMEN: Punto de entrada y enrutador MVC. Conecta las rutas HTTP (/api/...) con cada Controlador y sirve la Vista de public/.
+ * RESUMEN: La puerta del back. Recibe lo que manda el front (/api/...) y se lo pasa al Control que toca.
  *
- * ARCHIVO: server.js   ← AQUÍ EMPIEZA EL SERVIDOR (Vercel exige que se llame "server.js")
+ * ARCHIVO: server.js   ← AQUÍ EMPIEZA EL BACK (Vercel exige que se llame "server.js")
  *
- * ARQUITECTURA MVC:
- *   Vista (public/)  →  server.js (rutas)  →  Controlador (back/control/)  →  Modelo (back/modelo/ + ArchivoJson)
+ * QUÉ HACE: RECIBE todas las peticiones que manda el front (las que empiezan por /api).
+ *           Según la dirección (ruta) que llega, llama al método del control que corresponde
+ *           y le devuelve la respuesta al front.
+ *
+ * RECORRIDO:  front (public/)  →  server.js (ruta)  →  back/control  →  back/persistencia  →  datos
+ *
+ * CÓMO SE ARRANCA:  Vercel lo arranca solo (las páginas de public/ también las publica Vercel)
  */
 
-const path = require('path');
-const express = require('express');
+const express = require('express'); // librería para recibir peticiones del front
 
 const ControlClientes = require('./back/control/ControlClientes');
 const ControlMascotas = require('./back/control/ControlMascotas');
@@ -23,55 +27,98 @@ const controlCitas = new ControlCitas();
 const controlNotificaciones = new ControlNotificaciones();
 
 const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json()); // convierte los datos que llegan del front en un objeto (queda en req.body)
 
-// Middleware de autorización: solo el rol "secretaria" puede crear registros
-function soloSecretaria(req, res, next) {
-  if (req.headers.rol != 'secretaria') {
-    return res.json({ ok: false, mensaje: 'Acceso permitido solo a usuarios con rol de secretaria' });
-  }
-  next();
-}
-
-// Redirige la raíz a la Vista unificada
-app.get('/', (req, res) => res.redirect('/mascoticas.html'));
-
-// ---------- Inicio de sesión ----------
-app.post('/api/sesion', (req, res) => controlEmpleados.iniciarSesion(req, res));
-
-// ---------- Clientes (Renzo Gallardo) ----------
-app.post('/api/clientes', soloSecretaria, (req, res) => controlClientes.crear(req, res));
-app.get('/api/clientes', (req, res) => controlClientes.consultar(req, res));
-
-// ---------- Mascotas (Ian Carmona) ----------
-app.post('/api/mascotas', soloSecretaria, (req, res) => controlMascotas.crear(req, res));
-app.get('/api/mascotas', (req, res) => controlMascotas.consultar(req, res));
-
-// ---------- Empleados (Ángel Araujo) ----------
-app.post('/api/empleados', soloSecretaria, (req, res) => controlEmpleados.crear(req, res));
-app.get('/api/empleados', (req, res) => controlEmpleados.consultar(req, res));
-
-// ---------- Citas (Mouriss ElJawich) ----------
-app.post('/api/citas', soloSecretaria, (req, res) => controlCitas.crear(req, res));
-app.get('/api/citas', (req, res) => controlCitas.consultarDelDia(req, res));
-
-// ---------- Notificaciones (Niyerlin Muñoz) ----------
-app.post('/api/notificaciones', soloSecretaria, (req, res) => controlNotificaciones.crear(req, res));
-app.get('/api/notificaciones', (req, res) => controlNotificaciones.consultar(req, res));
-
-// ---------- Rutas de pantallas anteriores (ej. /inicio/login.html) ----------
-app.use((req, res, next) => {
-  if (req.method === 'GET' && !req.path.startsWith('/api/') && req.path !== '/mascoticas.html') {
-    return res.redirect('/mascoticas.html');
-  }
-  next();
+// Si alguien entra a la dirección principal (sin nada después), lo manda a la pantalla de login
+app.get('/', function (req, res) {
+  res.redirect('/inicio/login.html');
 });
 
-// ---------- Manejo global de errores (ej. fallo de conexión con Redis) ----------
-app.use((error, req, res, next) => {
+// Respuesta cuando alguien que no es secretaria intenta crear algo
+const SOLO_SECRETARIA = { ok: false, mensaje: 'Acceso permitido solo a usuarios con rol de secretaria' };
+
+/*
+ * RUTAS
+ *   app.get(...)  = consultar        app.post(...) = crear
+ *   req.body          = datos del formulario
+ *   req.query         = datos que van en la dirección después del "?"  (ej: /api/clientes?buscar=ana)
+ *   req.headers.rol   = rol de quien inició sesión (lo manda el front en cada petición)
+ *   res.json(...)     = lo que se le responde al front
+ */
+
+// ---------- Inicio de sesión ----------
+app.post('/api/sesion', async function (req, res) {
+  const respuesta = await controlEmpleados.iniciarSesion(req.body.usuario, req.body.clave);
+  res.json(respuesta);
+});
+
+// ---------- Clientes (Renzo Gallardo) ----------
+app.post('/api/clientes', async function (req, res) {
+  if (req.headers.rol != 'secretaria') return res.json(SOLO_SECRETARIA);
+  const respuesta = await controlClientes.crear(req.body);
+  res.json(respuesta);
+});
+
+app.get('/api/clientes', async function (req, res) {
+  const respuesta = await controlClientes.consultar(req.query.buscar);
+  res.json(respuesta);
+});
+
+// ---------- Mascotas (Ian Carmona) ----------
+app.post('/api/mascotas', async function (req, res) {
+  if (req.headers.rol != 'secretaria') return res.json(SOLO_SECRETARIA);
+  const respuesta = await controlMascotas.crear(req.body);
+  res.json(respuesta);
+});
+
+app.get('/api/mascotas', async function (req, res) {
+  const respuesta = await controlMascotas.consultar(req.query.buscar, req.query.clienteId);
+  res.json(respuesta);
+});
+
+// ---------- Empleados (Ángel Araujo) ----------
+app.post('/api/empleados', async function (req, res) {
+  if (req.headers.rol != 'secretaria') return res.json(SOLO_SECRETARIA);
+  const respuesta = await controlEmpleados.crear(req.body);
+  res.json(respuesta);
+});
+
+app.get('/api/empleados', async function (req, res) {
+  const respuesta = await controlEmpleados.consultar(req.query.rol);
+  res.json(respuesta);
+});
+
+// ---------- Citas (Mouriss ElJawich) ----------
+app.post('/api/citas', async function (req, res) {
+  if (req.headers.rol != 'secretaria') return res.json(SOLO_SECRETARIA);
+  const respuesta = await controlCitas.crear(req.body);
+  res.json(respuesta);
+});
+
+app.get('/api/citas', async function (req, res) {
+  const respuesta = await controlCitas.consultarDelDia(req.query.fecha);
+  res.json(respuesta);
+});
+
+// ---------- Notificaciones (Niyerlin Muñoz) ----------
+app.post('/api/notificaciones', async function (req, res) {
+  if (req.headers.rol != 'secretaria') return res.json(SOLO_SECRETARIA);
+  const respuesta = await controlNotificaciones.crear(req.body);
+  res.json(respuesta);
+});
+
+app.get('/api/notificaciones', async function (req, res) {
+  const respuesta = await controlNotificaciones.consultar();
+  res.json(respuesta);
+});
+
+// ---------- Si algo falla al leer o escribir en la base de datos (Redis) ----------
+app.use(function (error, req, res, next) {
   console.log(error);
   res.json({ ok: false, mensaje: 'Fallo en la conexión con la base de datos' });
 });
 
-app.listen(3000, () => console.log('Servidor MVC de Mascoticas listo en http://localhost:3000'));
+// ---------- Arranca el servidor ----------
+app.listen(3000, function () {
+  console.log('Back de Mascoticas listo');
+});
